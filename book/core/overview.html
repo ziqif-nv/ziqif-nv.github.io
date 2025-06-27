@@ -1,0 +1,396 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Overview - KV Block Manager</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">KV Block Manager</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="core-architecture-overview"><a class="header" href="#core-architecture-overview">Core Architecture Overview</a></h1>
+<p>The KV Block Manager is built around a modular architecture that separates concerns and provides flexibility for different deployment scenarios. This document provides a high-level overview of the core components and their interactions.</p>
+<h2 id="architecture-components"><a class="header" href="#architecture-components">Architecture Components</a></h2>
+<pre><code class="language-mermaid">graph TB
+    A[KvBlockManager] --&gt; B[Block Pool]
+    A --&gt; C[Storage System]
+    A --&gt; D[Layout Manager]
+    A --&gt; E[Offload Manager]
+    A --&gt; F[Event Manager]
+    
+    B --&gt; G[Active Pool]
+    B --&gt; H[Inactive Pool]
+    B --&gt; I[Block Registry]
+    
+    C --&gt; J[Device Storage]
+    C --&gt; K[Host Storage]
+    C --&gt; L[Disk Storage]
+    C --&gt; M[NIXL Storage]
+    
+    D --&gt; N[Contiguous Layout]
+    D --&gt; O[Paged Layout]
+    D --&gt; P[Custom Layout]
+    
+    E --&gt; Q[Block Transfer]
+    E --&gt; R[Priority Management]
+</code></pre>
+<h2 id="core-components"><a class="header" href="#core-components">Core Components</a></h2>
+<h3 id="1-kvblockmanager"><a class="header" href="#1-kvblockmanager">1. KvBlockManager</a></h3>
+<p>The main entry point that orchestrates all block management operations. It provides:</p>
+<ul>
+<li><strong>Block Allocation</strong>: Request and manage blocks for inference</li>
+<li><strong>Block Registration</strong>: Register completed blocks for reuse</li>
+<li><strong>Block Matching</strong>: Find existing blocks that match sequence hashes</li>
+<li><strong>Storage Access</strong>: Provide access to different storage tiers</li>
+<li><strong>Lifecycle Management</strong>: Handle block creation, usage, and cleanup</li>
+</ul>
+<h3 id="2-block-pool"><a class="header" href="#2-block-pool">2. Block Pool</a></h3>
+<p>Manages the lifecycle of blocks across different states:</p>
+<ul>
+<li><strong>Active Pool</strong>: Tracks blocks currently in use by sequences</li>
+<li><strong>Inactive Pool</strong>: Manages available blocks for allocation</li>
+<li><strong>Block Registry</strong>: Maintains metadata about registered blocks</li>
+<li><strong>Priority Management</strong>: Implements eviction strategies for block reuse</li>
+</ul>
+<h3 id="3-storage-system"><a class="header" href="#3-storage-system">3. Storage System</a></h3>
+<p>Provides a unified interface for different storage backends:</p>
+<ul>
+<li><strong>Device Storage</strong>: GPU memory management</li>
+<li><strong>Host Storage</strong>: CPU memory management</li>
+<li><strong>Disk Storage</strong>: Local NVMe storage</li>
+<li><strong>NIXL Storage</strong>: Remote storage via NIXL protocol</li>
+</ul>
+<h3 id="4-layout-management"><a class="header" href="#4-layout-management">4. Layout Management</a></h3>
+<p>Handles data layout strategies for optimal performance:</p>
+<ul>
+<li><strong>Contiguous Layout</strong>: Simple linear memory layout</li>
+<li><strong>Paged Layout</strong>: Block-based memory organization</li>
+<li><strong>Custom Layout</strong>: User-defined layout strategies</li>
+</ul>
+<h3 id="5-offload-manager"><a class="header" href="#5-offload-manager">5. Offload Manager</a></h3>
+<p>Manages block movement between storage tiers:</p>
+<ul>
+<li><strong>Block Transfer</strong>: Efficient data movement between tiers</li>
+<li><strong>Priority Management</strong>: Intelligent offloading decisions</li>
+<li><strong>Background Processing</strong>: Asynchronous block operations</li>
+</ul>
+<h2 id="data-flow"><a class="header" href="#data-flow">Data Flow</a></h2>
+<h3 id="block-allocation-flow"><a class="header" href="#block-allocation-flow">Block Allocation Flow</a></h3>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant Client
+    participant BlockManager
+    participant BlockPool
+    participant Storage
+    
+    Client-&gt;&gt;BlockManager: allocate_blocks(count)
+    BlockManager-&gt;&gt;BlockPool: allocate_blocks(count)
+    BlockPool-&gt;&gt;Storage: get_blocks(count)
+    Storage--&gt;&gt;BlockPool: blocks
+    BlockPool--&gt;&gt;BlockManager: MutableBlocks
+    BlockManager--&gt;&gt;Client: MutableBlocks
+</code></pre>
+<h3 id="block-registration-flow"><a class="header" href="#block-registration-flow">Block Registration Flow</a></h3>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant Client
+    participant BlockManager
+    participant BlockPool
+    participant Registry
+    
+    Client-&gt;&gt;BlockManager: register_blocks(blocks)
+    BlockManager-&gt;&gt;BlockPool: register_blocks(blocks)
+    BlockPool-&gt;&gt;Registry: check_existing(hashes)
+    Registry--&gt;&gt;BlockPool: existing_blocks
+    BlockPool--&gt;&gt;BlockManager: ImmutableBlocks
+    BlockManager--&gt;&gt;Client: ImmutableBlocks
+</code></pre>
+<h2 id="key-design-principles"><a class="header" href="#key-design-principles">Key Design Principles</a></h2>
+<h3 id="1-separation-of-concerns"><a class="header" href="#1-separation-of-concerns">1. Separation of Concerns</a></h3>
+<p>Each component has a well-defined responsibility:</p>
+<ul>
+<li><strong>BlockManager</strong>: High-level orchestration</li>
+<li><strong>BlockPool</strong>: Block lifecycle management</li>
+<li><strong>Storage</strong>: Memory management</li>
+<li><strong>Layout</strong>: Data organization</li>
+<li><strong>Offload</strong>: Tier management</li>
+</ul>
+<h3 id="2-type-safety"><a class="header" href="#2-type-safety">2. Type Safety</a></h3>
+<p>The system uses Rust's type system to ensure:</p>
+<ul>
+<li><strong>Storage Type Safety</strong>: Compile-time guarantees about storage types</li>
+<li><strong>Block State Safety</strong>: Prevents invalid state transitions</li>
+<li><strong>Thread Safety</strong>: Safe concurrent access patterns</li>
+</ul>
+<h3 id="3-performance-optimization"><a class="header" href="#3-performance-optimization">3. Performance Optimization</a></h3>
+<p>Multiple optimization strategies:</p>
+<ul>
+<li><strong>Block Reuse</strong>: Minimize memory allocation overhead</li>
+<li><strong>Efficient Layouts</strong>: Optimize memory access patterns</li>
+<li><strong>Async Operations</strong>: Non-blocking I/O operations</li>
+<li><strong>Smart Eviction</strong>: Priority-based block management</li>
+</ul>
+<h3 id="4-extensibility"><a class="header" href="#4-extensibility">4. Extensibility</a></h3>
+<p>The modular design allows for:</p>
+<ul>
+<li><strong>Custom Storage</strong>: Implement new storage backends</li>
+<li><strong>Custom Layouts</strong>: Define new data organization strategies</li>
+<li><strong>Custom Policies</strong>: Implement custom eviction strategies</li>
+<li><strong>Plugin Architecture</strong>: Add new functionality without core changes</li>
+</ul>
+<h2 id="threading-model"><a class="header" href="#threading-model">Threading Model</a></h2>
+<p>The KV Block Manager uses a multi-threaded architecture:</p>
+<ul>
+<li><strong>Main Thread</strong>: Handles client requests and coordination</li>
+<li><strong>Background Threads</strong>: Process async operations (offloading, cleanup)</li>
+<li><strong>Worker Threads</strong>: Handle block transfers and I/O operations</li>
+<li><strong>Event Loop</strong>: Manages async task scheduling</li>
+</ul>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<p>The system provides comprehensive error handling:</p>
+<ul>
+<li><strong>Storage Errors</strong>: Handle allocation and access failures</li>
+<li><strong>Block Errors</strong>: Manage invalid block states</li>
+<li><strong>Network Errors</strong>: Handle distributed operation failures</li>
+<li><strong>Recovery Mechanisms</strong>: Automatic error recovery where possible</li>
+</ul>
+<h2 id="configuration"><a class="header" href="#configuration">Configuration</a></h2>
+<p>The system is highly configurable through:</p>
+<ul>
+<li><strong>Runtime Configuration</strong>: Worker settings, async runtime</li>
+<li><strong>Model Configuration</strong>: Layer count, dimensions, data types</li>
+<li><strong>Storage Configuration</strong>: Memory allocation, storage types</li>
+<li><strong>Layout Configuration</strong>: Data organization strategies</li>
+<li><strong>Policy Configuration</strong>: Eviction and offloading policies</li>
+</ul>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<ul>
+<li><a href="block_manager.html">Block Manager Details</a> - Deep dive into the main orchestrator</li>
+<li><a href="configuration.html">Configuration System</a> - Learn about configuration options</li>
+<li><a href="storage.html">Storage System</a> - Understand storage backends</li>
+<li><a href="block_pool.html">Block Pool</a> - Explore block lifecycle management</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../introduction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../core/block_manager.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../introduction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../core/block_manager.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

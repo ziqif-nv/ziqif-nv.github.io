@@ -1,0 +1,604 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Python API Overview - KV Block Manager</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">KV Block Manager</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="python-api-overview"><a class="header" href="#python-api-overview">Python API Overview</a></h1>
+<p>The KV Block Manager provides comprehensive Python bindings that enable seamless integration with Python-based machine learning workflows. The Python API offers the same functionality as the Rust implementation while providing a more familiar interface for Python developers.</p>
+<h2 id="key-features"><a class="header" href="#key-features">Key Features</a></h2>
+<ul>
+<li><strong>Native Python Interface</strong>: Clean, Pythonic API design</li>
+<li><strong>DLPack Integration</strong>: Direct tensor interoperability with PyTorch, NumPy, and other frameworks</li>
+<li><strong>vLLM Integration</strong>: Production-ready integration with vLLM inference serving</li>
+<li><strong>Memory Safety</strong>: Automatic memory management with Python's garbage collection</li>
+<li><strong>Async Support</strong>: Full support for async/await patterns</li>
+<li><strong>Type Hints</strong>: Comprehensive type annotations for better IDE support</li>
+</ul>
+<h2 id="installation"><a class="header" href="#installation">Installation</a></h2>
+<p>The Python bindings are included with the main Dynamo package:</p>
+<pre><code class="language-bash">pip install dynamo-llm
+</code></pre>
+<h2 id="basic-usage"><a class="header" href="#basic-usage">Basic Usage</a></h2>
+<h3 id="creating-a-block-manager"><a class="header" href="#creating-a-block-manager">Creating a Block Manager</a></h3>
+<pre><code class="language-python">import dynamo_llm
+
+# Create a block manager with basic configuration
+block_manager = dynamo_llm.BlockManager(
+    num_layers=32,
+    page_size=16,
+    inner_dim=4096
+)
+
+# Create with advanced configuration
+block_manager = dynamo_llm.BlockManager(
+    num_layers=32,
+    page_size=16,
+    inner_dim=4096,
+    dtype=dynamo_llm.DType.FP16,
+    device_id=0
+)
+</code></pre>
+<h3 id="allocating-blocks"><a class="header" href="#allocating-blocks">Allocating Blocks</a></h3>
+<pre><code class="language-python"># Allocate blocks for inference
+blocks = block_manager.allocate_blocks(4)
+
+# Blocks are returned as a list of Block objects
+for block in blocks:
+    print(f"Block has {len(block)} layers")
+    
+    # Access individual layers
+    for layer_idx in range(len(block)):
+        layer = block[layer_idx]
+        print(f"Layer {layer_idx} shape: {layer.shape}")
+</code></pre>
+<h3 id="working-with-block-data"><a class="header" href="#working-with-block-data">Working with Block Data</a></h3>
+<pre><code class="language-python"># Get a block and access its data
+block = blocks[0]
+layer = block[0]  # Get first layer
+
+# Convert to PyTorch tensor
+import torch
+tensor = torch.from_dlpack(layer.__dlpack__())
+print(f"Tensor shape: {tensor.shape}")
+print(f"Tensor dtype: {tensor.dtype}")
+
+# Convert to NumPy array
+import numpy as np
+array = np.from_dlpack(layer.__dlpack__())
+print(f"Array shape: {array.shape}")
+</code></pre>
+<h2 id="core-classes"><a class="header" href="#core-classes">Core Classes</a></h2>
+<h3 id="blockmanager"><a class="header" href="#blockmanager">BlockManager</a></h3>
+<p>The main entry point for block management operations.</p>
+<pre><code class="language-python">class BlockManager:
+    def __init__(
+        self,
+        num_layers: int,
+        page_size: int,
+        inner_dim: int,
+        dtype: DType = DType.FP16,
+        device_id: int = 0
+    ):
+        ...
+    
+    def allocate_blocks(self, count: int) -&gt; List[Block]:
+        """Allocate new blocks for inference."""
+        ...
+    
+    def get_device_pool(self) -&gt; Optional[BlockPool]:
+        """Get the device (GPU) block pool."""
+        ...
+    
+    def get_host_pool(self) -&gt; Optional[BlockPool]:
+        """Get the host (CPU) block pool."""
+        ...
+</code></pre>
+<h3 id="block"><a class="header" href="#block">Block</a></h3>
+<p>Represents a KV cache block containing multiple layers.</p>
+<pre><code class="language-python">class Block:
+    def __len__(self) -&gt; int:
+        """Return the number of layers in the block."""
+        ...
+    
+    def __getitem__(self, index: int) -&gt; Layer:
+        """Get a layer by index."""
+        ...
+    
+    def __iter__(self) -&gt; Iterator[Layer]:
+        """Iterate over layers."""
+        ...
+    
+    def to_list(self) -&gt; List[Layer]:
+        """Convert block to a list of layers."""
+        ...
+    
+    def __dlpack__(self, stream=None, max_version=None, dl_device=None, copy=None):
+        """Export block data as DLPack tensor."""
+        ...
+</code></pre>
+<h3 id="layer"><a class="header" href="#layer">Layer</a></h3>
+<p>Represents a single layer within a block.</p>
+<pre><code class="language-python">class Layer:
+    def __dlpack__(self, stream=None, max_version=None, dl_device=None, copy=None):
+        """Export layer data as DLPack tensor."""
+        ...
+    
+    @property
+    def shape(self) -&gt; Tuple[int, ...]:
+        """Get the shape of the layer data."""
+        ...
+    
+    @property
+    def dtype(self) -&gt; DType:
+        """Get the data type of the layer."""
+        ...
+</code></pre>
+<h2 id="advanced-usage"><a class="header" href="#advanced-usage">Advanced Usage</a></h2>
+<h3 id="block-pool-management"><a class="header" href="#block-pool-management">Block Pool Management</a></h3>
+<pre><code class="language-python"># Access different storage pools
+device_pool = block_manager.get_device_pool()
+host_pool = block_manager.get_host_pool()
+
+if device_pool:
+    print(f"Device blocks: {device_pool.total_blocks()}")
+    print(f"Available: {device_pool.available_blocks()}")
+    
+    # Allocate from specific pool
+    device_blocks = device_pool.allocate_blocks(2)
+</code></pre>
+<h3 id="block-registration-and-matching"><a class="header" href="#block-registration-and-matching">Block Registration and Matching</a></h3>
+<pre><code class="language-python"># Register blocks after computation
+immutable_blocks = device_pool.register_blocks(device_blocks)
+
+# Get sequence hashes for matching
+sequence_hashes = [block.sequence_hash() for block in immutable_blocks]
+
+# Match blocks by sequence hash
+matched_blocks = device_pool.match_sequence_hashes(sequence_hashes)
+
+if len(matched_blocks) == len(sequence_hashes):
+    print("All blocks found in cache!")
+else:
+    print("Some blocks need to be computed")
+</code></pre>
+<h3 id="memory-management"><a class="header" href="#memory-management">Memory Management</a></h3>
+<pre><code class="language-python"># Check memory usage
+if device_pool:
+    usage = device_pool.usage()
+    print(f"Device memory usage: {usage:.2%}")
+
+# Monitor block allocation
+total_blocks = device_pool.total_blocks()
+available_blocks = device_pool.available_blocks()
+used_blocks = total_blocks - available_blocks
+print(f"Used blocks: {used_blocks}/{total_blocks}")
+</code></pre>
+<h2 id="dlpack-integration"><a class="header" href="#dlpack-integration">DLPack Integration</a></h2>
+<p>The Python bindings provide full DLPack support for seamless tensor interoperability:</p>
+<h3 id="pytorch-integration"><a class="header" href="#pytorch-integration">PyTorch Integration</a></h3>
+<pre><code class="language-python">import torch
+import dynamo_llm
+
+# Create block manager
+block_manager = dynamo_llm.BlockManager(
+    num_layers=32,
+    page_size=16,
+    inner_dim=4096
+)
+
+# Allocate blocks
+blocks = block_manager.allocate_blocks(1)
+block = blocks[0]
+
+# Convert to PyTorch tensors
+for layer_idx in range(len(block)):
+    layer = block[layer_idx]
+    
+    # Convert to PyTorch tensor
+    tensor = torch.from_dlpack(layer.__dlpack__())
+    
+    # Perform operations
+    result = torch.softmax(tensor, dim=-1)
+    
+    # Convert back if needed
+    # Note: This would require additional implementation
+</code></pre>
+<h3 id="numpy-integration"><a class="header" href="#numpy-integration">NumPy Integration</a></h3>
+<pre><code class="language-python">import numpy as np
+import dynamo_llm
+
+# Get layer data as NumPy array
+layer = block[0]
+array = np.from_dlpack(layer.__dlpack__())
+
+# Perform NumPy operations
+mean = np.mean(array)
+std = np.std(array)
+normalized = (array - mean) / std
+</code></pre>
+<h3 id="cupy-integration-gpu-arrays"><a class="header" href="#cupy-integration-gpu-arrays">CuPy Integration (GPU Arrays)</a></h3>
+<pre><code class="language-python">import cupy as cp
+import dynamo_llm
+
+# Convert to CuPy array for GPU operations
+layer = block[0]
+gpu_array = cp.from_dlpack(layer.__dlpack__())
+
+# Perform GPU operations
+result = cp.linalg.norm(gpu_array, axis=-1)
+</code></pre>
+<h2 id="vllm-integration"><a class="header" href="#vllm-integration">vLLM Integration</a></h2>
+<p>The KV Block Manager provides direct integration with vLLM:</p>
+<pre><code class="language-python">import dynamo_llm
+from dynamo_llm.vllm import KvbmCacheManager
+
+# Create block manager
+block_manager = dynamo_llm.BlockManager(
+    num_layers=32,
+    page_size=16,
+    inner_dim=4096
+)
+
+# Create vLLM cache manager
+cache_manager = KvbmCacheManager(block_manager)
+
+# Create a request
+request = KvbmRequest(
+    request_id="req_001",
+    salt_hash=12345
+)
+
+# Create slot for request
+tokens = [1, 2, 3, 4, 5]  # Token IDs
+sequence_hashes = cache_manager.create_slot(request, tokens)
+
+# Get computed blocks
+computed_blocks = cache_manager.get_computed_blocks(sequence_hashes)
+
+# Update slot with new tokens
+update = SlotUpdate(
+    request_id="req_001",
+    request_num_tokens=10,
+    request_num_computed_tokens=5,
+    tokens_to_append=[6, 7, 8, 9, 10],
+    num_new_tokens=5
+)
+
+new_blocks = cache_manager.alloctate_slots(update)
+
+# Clean up
+cache_manager.free("req_001")
+</code></pre>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<p>The Python API provides comprehensive error handling:</p>
+<pre><code class="language-python">import dynamo_llm
+
+try:
+    # Create block manager
+    block_manager = dynamo_llm.BlockManager(
+        num_layers=32,
+        page_size=16,
+        inner_dim=4096
+    )
+    
+    # Allocate blocks
+    blocks = block_manager.allocate_blocks(1000)  # May fail if not enough memory
+    
+except dynamo_llm.BlockManagerError as e:
+    print(f"Block manager error: {e}")
+    
+except dynamo_llm.StorageError as e:
+    print(f"Storage error: {e}")
+    
+except Exception as e:
+    print(f"Unexpected error: {e}")
+</code></pre>
+<h2 id="performance-considerations"><a class="header" href="#performance-considerations">Performance Considerations</a></h2>
+<h3 id="memory-efficiency"><a class="header" href="#memory-efficiency">Memory Efficiency</a></h3>
+<pre><code class="language-python"># Monitor memory usage
+def monitor_memory(block_manager):
+    device_pool = block_manager.get_device_pool()
+    if device_pool:
+        usage = device_pool.usage()
+        print(f"Memory usage: {usage:.2%}")
+        
+        if usage &gt; 0.9:  # 90% usage
+            print("Warning: High memory usage!")
+
+# Use context managers for automatic cleanup
+def process_blocks(block_manager, count):
+    with block_manager.allocate_blocks(count) as blocks:
+        # Process blocks
+        for block in blocks:
+            # ... processing ...
+            pass
+    # Blocks automatically returned to pool
+</code></pre>
+<h3 id="batch-processing"><a class="header" href="#batch-processing">Batch Processing</a></h3>
+<pre><code class="language-python"># Process multiple blocks efficiently
+def process_batch(block_manager, batch_size):
+    blocks = block_manager.allocate_blocks(batch_size)
+    
+    try:
+        # Process all blocks
+        results = []
+        for block in blocks:
+            result = process_block(block)
+            results.append(result)
+        
+        return results
+    
+    finally:
+        # Ensure blocks are returned to pool
+        for block in blocks:
+            del block
+</code></pre>
+<h2 id="type-hints-and-ide-support"><a class="header" href="#type-hints-and-ide-support">Type Hints and IDE Support</a></h2>
+<p>The Python API includes comprehensive type hints:</p>
+<pre><code class="language-python">from typing import List, Optional, Tuple
+import dynamo_llm
+
+def process_layers(block: dynamo_llm.Block) -&gt; List[float]:
+    """Process all layers in a block and return results."""
+    results: List[float] = []
+    
+    for layer in block:
+        # Type hints help with IDE autocomplete
+        tensor = torch.from_dlpack(layer.__dlpack__())
+        result = tensor.mean().item()
+        results.append(result)
+    
+    return results
+
+def allocate_with_fallback(
+    block_manager: dynamo_llm.BlockManager,
+    count: int
+) -&gt; Optional[List[dynamo_llm.Block]]:
+    """Allocate blocks with fallback to host memory."""
+    try:
+        return block_manager.allocate_blocks(count)
+    except dynamo_llm.BlockManagerError:
+        # Fallback to host memory
+        host_pool = block_manager.get_host_pool()
+        if host_pool:
+            return host_pool.allocate_blocks(count)
+        return None
+</code></pre>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<ul>
+<li><a href="block.html">Block Interface</a> - Learn about Block and Layer classes</li>
+<li><a href="dlpack.html">DLPack Integration</a> - Understand tensor interoperability</li>
+<li><a href="vllm.html">vLLM Integration</a> - Production deployment with vLLM</li>
+<li><a href="examples/basic_usage.html">Examples</a> - Practical usage examples</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../core/events_metrics.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../python/block.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../core/events_metrics.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../python/block.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

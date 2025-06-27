@@ -1,0 +1,756 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Rust API Reference - KV Block Manager</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">KV Block Manager</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="rust-api-reference"><a class="header" href="#rust-api-reference">Rust API Reference</a></h1>
+<p>This document provides a comprehensive reference for the Rust API of the KV Block Manager.</p>
+<h2 id="core-types"><a class="header" href="#core-types">Core Types</a></h2>
+<h3 id="kvblockmanager"><a class="header" href="#kvblockmanager">KvBlockManager</a></h3>
+<p>The main entry point for block management operations.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct KvBlockManager&lt;Metadata: BlockMetadata&gt; {
+    state: Arc&lt;state::KvBlockManagerState&lt;locality::Local, Metadata&gt;&gt;,
+    _cancellation_token: Arc&lt;CancelOnLastDrop&gt;,
+    block_size: usize,
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="methods"><a class="header" href="#methods">Methods</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;Metadata: BlockMetadata&gt; KvBlockManager&lt;Metadata&gt; {
+    /// Create a new KvBlockManager
+    pub async fn new(config: KvBlockManagerConfig) -&gt; Result&lt;Self&gt;
+    
+    /// Get the block size in tokens
+    pub fn block_size(&amp;self) -&gt; usize
+    
+    /// Get the worker ID
+    pub fn worker_id(&amp;self) -&gt; WorkerID
+    
+    /// Export local blockset configuration
+    pub fn export_local_blockset(&amp;self) -&gt; Result&lt;SerializedNixlBlockSet&gt;
+    
+    /// Import remote blockset configuration
+    pub fn import_remote_blockset(&amp;self, serialized_blockset: SerializedNixlBlockSet) -&gt; Result&lt;()&gt;
+    
+    /// Get immutable remote blocks
+    pub fn get_remote_blocks_immutable(&amp;self, bds: &amp;BlockDescriptorList) -&gt; Result&lt;Vec&lt;RemoteBlock&lt;IsImmutable&gt;&gt;&gt;
+    
+    /// Get mutable remote blocks
+    pub fn get_remote_blocks_mutable(&amp;self, bds: &amp;BlockDescriptorList) -&gt; Result&lt;Vec&lt;RemoteBlock&lt;IsMutable&gt;&gt;&gt;
+    
+    /// Get device block pool
+    pub fn device(&amp;self) -&gt; Option&lt;&amp;BlockPool&lt;DeviceStorage, locality::Local, Metadata&gt;&gt;
+    
+    /// Get host block pool
+    pub fn host(&amp;self) -&gt; Option&lt;&amp;BlockPool&lt;PinnedStorage, locality::Local, Metadata&gt;&gt;
+    
+    /// Get disk block pool
+    pub fn disk(&amp;self) -&gt; Option&lt;&amp;BlockPool&lt;DiskStorage, locality::Local, Metadata&gt;&gt;
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="blockpool"><a class="header" href="#blockpool">BlockPool</a></h3>
+<p>Manages the lifecycle of blocks in a specific storage backend.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct BlockPool&lt;S: Storage, L: LocalityProvider, M: BlockMetadata&gt; {
+    priority_tx: tokio::sync::mpsc::UnboundedSender&lt;PriorityRequest&lt;S, L, M&gt;&gt;,
+    ctrl_tx: tokio::sync::mpsc::UnboundedSender&lt;ControlRequest&lt;S, L, M&gt;&gt;,
+    available_blocks_counter: Arc&lt;AtomicU64&gt;,
+    total_blocks_counter: Arc&lt;AtomicU64&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="methods-1"><a class="header" href="#methods-1">Methods</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;S: Storage, L: LocalityProvider, M: BlockMetadata&gt; BlockPool&lt;S, L, M&gt; {
+    /// Create a new BlockPool
+    pub fn new(args: BlockPoolArgs&lt;S, L, M&gt;) -&gt; Result&lt;Self&gt;
+    
+    /// Get total number of blocks
+    pub fn total_blocks(&amp;self) -&gt; u64
+    
+    /// Get number of available blocks
+    pub fn available_blocks(&amp;self) -&gt; u64
+    
+    /// Allocate blocks (async)
+    pub async fn allocate_blocks(&amp;self, count: usize) -&gt; Result&lt;Vec&lt;MutableBlock&lt;S, L, M&gt;&gt;, BlockPoolError&gt;
+    
+    /// Allocate blocks (blocking)
+    pub fn allocate_blocks_blocking(&amp;self, count: usize) -&gt; Result&lt;Vec&lt;MutableBlock&lt;S, L, M&gt;&gt;, BlockPoolError&gt;
+    
+    /// Register blocks (async)
+    pub async fn register_blocks(&amp;self, blocks: Vec&lt;MutableBlock&lt;S, L, M&gt;&gt;) -&gt; Result&lt;Vec&lt;ImmutableBlock&lt;S, L, M&gt;&gt;, BlockPoolError&gt;
+    
+    /// Register blocks (blocking)
+    pub fn register_blocks_blocking(&amp;self, blocks: Vec&lt;MutableBlock&lt;S, L, M&gt;&gt;) -&gt; Result&lt;Vec&lt;ImmutableBlock&lt;S, L, M&gt;&gt;, BlockPoolError&gt;
+    
+    /// Match sequence hashes (async)
+    pub async fn match_sequence_hashes(&amp;self, sequence_hashes: &amp;[SequenceHash]) -&gt; Result&lt;Vec&lt;ImmutableBlock&lt;S, L, M&gt;&gt;, BlockPoolError&gt;
+    
+    /// Match sequence hashes (blocking)
+    pub fn match_sequence_hashes_blocking(&amp;self, sequence_hashes: &amp;[SequenceHash]) -&gt; Result&lt;Vec&lt;ImmutableBlock&lt;S, L, M&gt;&gt;, BlockPoolError&gt;
+    
+    /// Add blocks to pool
+    pub async fn add_blocks(&amp;self, blocks: Vec&lt;Block&lt;S, L, M&gt;&gt;) -&gt; Result&lt;(), BlockPoolError&gt;
+    
+    /// Add blocks to pool (blocking)
+    pub fn add_blocks_blocking(&amp;self, blocks: Vec&lt;Block&lt;S, L, M&gt;&gt;) -&gt; Result&lt;(), BlockPoolError&gt;
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="mutableblock"><a class="header" href="#mutableblock">MutableBlock</a></h3>
+<p>Represents a uniquely owned block that can be modified.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct MutableBlock&lt;S: Storage, L: LocalityProvider, M: BlockMetadata&gt; {
+    block: Block&lt;S, L, M&gt;,
+    state: BlockState,
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="methods-2"><a class="header" href="#methods-2">Methods</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;S: Storage, L: LocalityProvider, M: BlockMetadata&gt; MutableBlock&lt;S, L, M&gt; {
+    /// Get block ID
+    pub fn block_id(&amp;self) -&gt; BlockId
+    
+    /// Get number of layers
+    pub fn num_layers(&amp;self) -&gt; usize
+    
+    /// Get page size
+    pub fn page_size(&amp;self) -&gt; usize
+    
+    /// Get inner dimension
+    pub fn inner_dim(&amp;self) -&gt; usize
+    
+    /// Get number of outer dimensions
+    pub fn num_outer_dims(&amp;self) -&gt; usize
+    
+    /// Get layer view
+    pub fn layer_view(&amp;self, layer_idx: usize, outer_idx: usize) -&gt; BlockResult&lt;view::LayerView&lt;S&gt;&gt;
+    
+    /// Get mutable layer view
+    pub fn layer_view_mut(&amp;mut self, layer_idx: usize, outer_idx: usize) -&gt; BlockResult&lt;view::LayerViewMut&lt;S&gt;&gt;
+    
+    /// Get block view
+    pub fn block_view(&amp;self) -&gt; BlockResult&lt;view::BlockView&lt;S&gt;&gt;
+    
+    /// Get mutable block view
+    pub fn block_view_mut(&amp;mut self) -&gt; BlockResult&lt;view::BlockViewMut&lt;S&gt;&gt;
+    
+    /// Get sequence hash
+    pub fn sequence_hash(&amp;self) -&gt; SequenceHash
+    
+    /// Check if block is complete
+    pub fn is_complete(&amp;self) -&gt; bool
+    
+    /// Mark block as complete
+    pub fn mark_complete(&amp;mut self)
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="immutableblock"><a class="header" href="#immutableblock">ImmutableBlock</a></h3>
+<p>Represents a shared, immutable reference to a block.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct ImmutableBlock&lt;S: Storage, L: LocalityProvider, M: BlockMetadata&gt; {
+    block: Arc&lt;Block&lt;S, L, M&gt;&gt;,
+    state: BlockState,
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="methods-3"><a class="header" href="#methods-3">Methods</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;S: Storage, L: LocalityProvider, M: BlockMetadata&gt; ImmutableBlock&lt;S, L, M&gt; {
+    /// Get block ID
+    pub fn block_id(&amp;self) -&gt; BlockId
+    
+    /// Get number of layers
+    pub fn num_layers(&amp;self) -&gt; usize
+    
+    /// Get page size
+    pub fn page_size(&amp;self) -&gt; usize
+    
+    /// Get inner dimension
+    pub fn inner_dim(&amp;self) -&gt; usize
+    
+    /// Get number of outer dimensions
+    pub fn num_outer_dims(&amp;self) -&gt; usize
+    
+    /// Get layer view
+    pub fn layer_view(&amp;self, layer_idx: usize, outer_idx: usize) -&gt; BlockResult&lt;view::LayerView&lt;S&gt;&gt;
+    
+    /// Get block view
+    pub fn block_view(&amp;self) -&gt; BlockResult&lt;view::BlockView&lt;S&gt;&gt;
+    
+    /// Get sequence hash
+    pub fn sequence_hash(&amp;self) -&gt; SequenceHash
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="configuration-types"><a class="header" href="#configuration-types">Configuration Types</a></h2>
+<h3 id="kvblockmanagerconfig"><a class="header" href="#kvblockmanagerconfig">KvBlockManagerConfig</a></h3>
+<p>Main configuration for the block manager.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct KvBlockManagerConfig {
+    pub runtime: KvManagerRuntimeConfig,
+    pub model: KvManagerModelConfig,
+    pub device_layout: Option&lt;KvManagerLayoutConfig&lt;DeviceStorage&gt;&gt;,
+    pub host_layout: Option&lt;KvManagerLayoutConfig&lt;PinnedStorage&gt;&gt;,
+    pub disk_layout: Option&lt;KvManagerLayoutConfig&lt;DiskStorage&gt;&gt;,
+    pub event_manager: Option&lt;Arc&lt;dyn EventManager&gt;&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="kvmanagerruntimeconfig"><a class="header" href="#kvmanagerruntimeconfig">KvManagerRuntimeConfig</a></h3>
+<p>Runtime configuration for the block manager.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct KvManagerRuntimeConfig {
+    pub worker_id: u64,
+    pub cancellation_token: CancellationToken,
+    pub nixl: NixlOptions,
+    pub async_runtime: Option&lt;Arc&lt;tokio::runtime::Runtime&gt;&gt;,
+    pub metrics_registry: Arc&lt;Registry&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="kvmanagermodelconfig"><a class="header" href="#kvmanagermodelconfig">KvManagerModelConfig</a></h3>
+<p>Model-specific configuration.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct KvManagerModelConfig {
+    pub num_layers: usize,
+    pub outer_dim: usize,
+    pub page_size: usize,
+    pub inner_dim: usize,
+    pub dtype: DType,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="kvmanagerlayoutconfig"><a class="header" href="#kvmanagerlayoutconfig">KvManagerLayoutConfig</a></h3>
+<p>Layout configuration for a storage type.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct KvManagerLayoutConfig&lt;S: Storage + NixlRegisterableStorage&gt; {
+    pub num_blocks: usize,
+    pub layout_type: LayoutType,
+    pub storage: Option&lt;Vec&lt;S&gt;&gt;,
+    pub allocator: Option&lt;Arc&lt;dyn StorageAllocator&lt;S&gt;&gt;&gt;,
+    pub logical: Option&lt;BlockParallelismStrategy&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="storage-types"><a class="header" href="#storage-types">Storage Types</a></h2>
+<h3 id="storage-trait"><a class="header" href="#storage-trait">Storage Trait</a></h3>
+<p>Core trait for storage backends.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait Storage: Debug + Send + Sync + 'static {
+    fn storage_type(&amp;self) -&gt; StorageType;
+    fn addr(&amp;self) -&gt; u64;
+    fn size(&amp;self) -&gt; usize;
+    unsafe fn as_ptr(&amp;self) -&gt; *const u8;
+    unsafe fn as_mut_ptr(&amp;mut self) -&gt; *mut u8;
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="storagetype"><a class="header" href="#storagetype">StorageType</a></h3>
+<p>Enumeration of supported storage types.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum StorageType {
+    System,
+    Device(u32),
+    Pinned,
+    Disk(u64),
+    Nixl,
+    Null,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="storage-allocators"><a class="header" href="#storage-allocators">Storage Allocators</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// System memory allocator
+pub struct SystemAllocator;
+
+// Device memory allocator
+pub struct DeviceAllocator;
+
+// Pinned memory allocator
+pub struct PinnedAllocator;
+
+// Disk storage allocator
+pub struct DiskAllocator;
+
+// NIXL storage allocator
+pub struct NixlAllocator;
+<span class="boring">}</span></code></pre></pre>
+<h2 id="error-types"><a class="header" href="#error-types">Error Types</a></h2>
+<h3 id="blockpoolerror"><a class="header" href="#blockpoolerror">BlockPoolError</a></h3>
+<p>Errors that can occur during block pool operations.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum BlockPoolError {
+    BlockNotComplete,
+    NotEnoughBlocksAvailable(usize, usize),
+    InvalidMutableBlock(String),
+    FailedToRegisterBlock(String),
+    ProgressEngineShutdown,
+    BlockError(BlockError),
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="blockerror"><a class="header" href="#blockerror">BlockError</a></h3>
+<p>Errors that can occur during block operations.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum BlockError {
+    ViewsNotAvailableOnLogicalBlocks,
+    InvalidLayerIndex(usize),
+    InvalidOuterIndex(usize),
+    StorageError(StorageError),
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="storageerror"><a class="header" href="#storageerror">StorageError</a></h3>
+<p>Errors that can occur during storage operations.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum StorageError {
+    AllocationFailed(String),
+    NotAccessible(String),
+    InvalidConfig(String),
+    OperationFailed(String),
+    Cuda(DriverError),
+    RegistrationKeyExists(String),
+    HandleNotFound(String),
+    NixlError(NixlError),
+    OutOfBounds(String),
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="view-types"><a class="header" href="#view-types">View Types</a></h2>
+<h3 id="layerview"><a class="header" href="#layerview">LayerView</a></h3>
+<p>Read-only view of a layer's data.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct LayerView&lt;S: Storage&gt; {
+    storage: S,
+    offset: usize,
+    size: usize,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="layerviewmut"><a class="header" href="#layerviewmut">LayerViewMut</a></h3>
+<p>Mutable view of a layer's data.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct LayerViewMut&lt;S: Storage&gt; {
+    storage: S,
+    offset: usize,
+    size: usize,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="blockview"><a class="header" href="#blockview">BlockView</a></h3>
+<p>Read-only view of an entire block's data.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct BlockView&lt;S: Storage&gt; {
+    storage: S,
+    offset: usize,
+    size: usize,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="blockviewmut"><a class="header" href="#blockviewmut">BlockViewMut</a></h3>
+<p>Mutable view of an entire block's data.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct BlockViewMut&lt;S: Storage&gt; {
+    storage: S,
+    offset: usize,
+    size: usize,
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="event-system"><a class="header" href="#event-system">Event System</a></h2>
+<h3 id="eventmanager-trait"><a class="header" href="#eventmanager-trait">EventManager Trait</a></h3>
+<p>Trait for handling block-related events.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait EventManager: Send + Sync + 'static {
+    fn block_allocated(&amp;self, block_id: BlockId);
+    fn block_registered(&amp;self, block_id: BlockId, sequence_hash: SequenceHash);
+    fn block_matched(&amp;self, block_id: BlockId, sequence_hash: SequenceHash);
+    fn block_evicted(&amp;self, block_id: BlockId);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="nulleventmanager"><a class="header" href="#nulleventmanager">NullEventManager</a></h3>
+<p>Default event manager that does nothing.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct NullEventManager;
+
+impl EventManager for NullEventManager {
+    fn block_allocated(&amp;self, _block_id: BlockId) {}
+    fn block_registered(&amp;self, _block_id: BlockId, _sequence_hash: SequenceHash) {}
+    fn block_matched(&amp;self, _block_id: BlockId, _sequence_hash: SequenceHash) {}
+    fn block_evicted(&amp;self, _block_id: BlockId) {}
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="metrics"><a class="header" href="#metrics">Metrics</a></h2>
+<h3 id="blockmanagermetrics"><a class="header" href="#blockmanagermetrics">BlockManagerMetrics</a></h3>
+<p>Metrics collection for the block manager.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct BlockManagerMetrics {
+    pool_metrics: Arc&lt;PoolMetrics&gt;,
+    allocation_counter: Counter,
+    registration_counter: Counter,
+    match_counter: Counter,
+    eviction_counter: Counter,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="poolmetrics"><a class="header" href="#poolmetrics">PoolMetrics</a></h3>
+<p>Metrics for a specific block pool.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct PoolMetrics {
+    total_blocks: Gauge,
+    available_blocks: Gauge,
+    allocation_duration: Histogram,
+    registration_duration: Histogram,
+    match_duration: Histogram,
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="utility-types"><a class="header" href="#utility-types">Utility Types</a></h2>
+<h3 id="sequencehash"><a class="header" href="#sequencehash">SequenceHash</a></h3>
+<p>Hash representing a sequence of tokens.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct SequenceHash([u8; 8]);
+
+impl SequenceHash {
+    pub fn new(hash: [u8; 8]) -&gt; Self;
+    pub fn as_bytes(&amp;self) -&gt; &amp;[u8; 8];
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="blockid"><a class="header" href="#blockid">BlockId</a></h3>
+<p>Unique identifier for a block.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub type BlockId = usize;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="workerid"><a class="header" href="#workerid">WorkerID</a></h3>
+<p>Unique identifier for a worker.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub type WorkerID = u64;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="dtype"><a class="header" href="#dtype">DType</a></h3>
+<p>Data type enumeration.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum DType {
+    FP16,
+    FP32,
+    BF16,
+    INT8,
+    INT16,
+    INT32,
+    INT64,
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="constants"><a class="header" href="#constants">Constants</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Default values
+pub const DEFAULT_PAGE_SIZE: usize = 16;
+pub const DEFAULT_INNER_DIM: usize = 4096;
+pub const DEFAULT_NUM_LAYERS: usize = 32;
+pub const DEFAULT_OUTER_DIM: usize = 2;
+
+// Limits
+pub const MAX_PAGE_SIZE: usize = 1024;
+pub const MAX_INNER_DIM: usize = 32768;
+pub const MAX_NUM_LAYERS: usize = 128;
+pub const MAX_OUTER_DIM: usize = 2;
+<span class="boring">}</span></code></pre></pre>
+<h2 id="type-aliases"><a class="header" href="#type-aliases">Type Aliases</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Common type aliases
+pub type ReferenceBlockManager = KvBlockManager&lt;BasicMetadata&gt;;
+pub type MutableBlocks&lt;S, L, M&gt; = Vec&lt;MutableBlock&lt;S, L, M&gt;&gt;;
+pub type ImmutableBlocks&lt;S, L, M&gt; = Vec&lt;ImmutableBlock&lt;S, L, M&gt;&gt;;
+pub type BlockPoolResult&lt;T&gt; = Result&lt;T, BlockPoolError&gt;;
+pub type StorageResult&lt;T&gt; = Result&lt;T, StorageError&gt;;
+<span class="boring">}</span></code></pre></pre>
+<h2 id="builder-patterns"><a class="header" href="#builder-patterns">Builder Patterns</a></h2>
+<h3 id="kvblockmanagerconfigbuilder"><a class="header" href="#kvblockmanagerconfigbuilder">KvBlockManagerConfigBuilder</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl KvBlockManagerConfigBuilder {
+    pub fn runtime(mut self, runtime: KvManagerRuntimeConfig) -&gt; Self;
+    pub fn model(mut self, model: KvManagerModelConfig) -&gt; Self;
+    pub fn device_layout(mut self, layout: KvManagerLayoutConfig&lt;DeviceStorage&gt;) -&gt; Self;
+    pub fn host_layout(mut self, layout: KvManagerLayoutConfig&lt;PinnedStorage&gt;) -&gt; Self;
+    pub fn disk_layout(mut self, layout: KvManagerLayoutConfig&lt;DiskStorage&gt;) -&gt; Self;
+    pub fn event_manager(mut self, manager: Arc&lt;dyn EventManager&gt;) -&gt; Self;
+    pub fn build(self) -&gt; Result&lt;KvBlockManagerConfig, String&gt;;
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="kvmanagerruntimeconfigbuilder"><a class="header" href="#kvmanagerruntimeconfigbuilder">KvManagerRuntimeConfigBuilder</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl KvManagerRuntimeConfigBuilder {
+    pub fn worker_id(mut self, id: u64) -&gt; Self;
+    pub fn enable_nixl(mut self) -&gt; Self;
+    pub fn use_nixl_agent(mut self, agent: NixlAgent) -&gt; Self;
+    pub fn disable_nixl(mut self) -&gt; Self;
+    pub fn async_runtime(mut self, runtime: Arc&lt;tokio::runtime::Runtime&gt;) -&gt; Self;
+    pub fn metrics_registry(mut self, registry: Arc&lt;Registry&gt;) -&gt; Self;
+    pub fn build(self) -&gt; KvManagerRuntimeConfig;
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="kvmanagermodelconfigbuilder"><a class="header" href="#kvmanagermodelconfigbuilder">KvManagerModelConfigBuilder</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl KvManagerModelConfigBuilder {
+    pub fn num_layers(mut self, layers: usize) -&gt; Self;
+    pub fn outer_dim(mut self, dim: usize) -&gt; Self;
+    pub fn page_size(mut self, size: usize) -&gt; Self;
+    pub fn inner_dim(mut self, dim: usize) -&gt; Self;
+    pub fn dtype(mut self, dtype: DType) -&gt; Self;
+    pub fn build(self) -&gt; KvManagerModelConfig;
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<ul>
+<li><a href="python.html">Python API Reference</a> - Python bindings reference</li>
+<li><a href="config.html">Configuration Reference</a> - Configuration options</li>
+<li><a href="examples/basic_usage.html">Examples</a> - Usage examples</li>
+<li><a href="advanced/best_practices.html">Best Practices</a> - Best practices guide</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../advanced/best_practices.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../api/python.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../advanced/best_practices.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../api/python.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

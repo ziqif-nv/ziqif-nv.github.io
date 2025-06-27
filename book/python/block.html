@@ -1,0 +1,564 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Block Interface - KV Block Manager</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">KV Block Manager</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="block-and-layer-interfaces"><a class="header" href="#block-and-layer-interfaces">Block and Layer Interfaces</a></h1>
+<p>The Python bindings provide <code>Block</code> and <code>Layer</code> classes that represent KV cache blocks and their individual layers. These classes offer a Pythonic interface for accessing and manipulating block data.</p>
+<h2 id="block-class"><a class="header" href="#block-class">Block Class</a></h2>
+<p>The <code>Block</code> class represents a KV cache block containing multiple layers. It provides sequence-like access to layers and supports DLPack for tensor interoperability.</p>
+<h3 id="basic-usage"><a class="header" href="#basic-usage">Basic Usage</a></h3>
+<pre><code class="language-python">import dynamo_llm
+
+# Create block manager and allocate blocks
+block_manager = dynamo_llm.BlockManager(
+    num_layers=32,
+    page_size=16,
+    inner_dim=4096
+)
+
+blocks = block_manager.allocate_blocks(1)
+block = blocks[0]
+
+# Get block information
+print(f"Block has {len(block)} layers")
+print(f"Block device ID: {block.device_id}")
+print(f"Block dtype: {block.dtype}")
+</code></pre>
+<h3 id="layer-access"><a class="header" href="#layer-access">Layer Access</a></h3>
+<pre><code class="language-python"># Access layers by index
+layer_0 = block[0]
+layer_1 = block[1]
+layer_2 = block[2]
+
+# Iterate over all layers
+for layer_idx, layer in enumerate(block):
+    print(f"Layer {layer_idx}: {layer.shape}")
+
+# Convert to list of layers
+layers = block.to_list()
+print(f"Converted to list with {len(layers)} layers")
+</code></pre>
+<h3 id="dlpack-integration"><a class="header" href="#dlpack-integration">DLPack Integration</a></h3>
+<pre><code class="language-python">import torch
+import numpy as np
+
+# Convert entire block to PyTorch tensor
+block_tensor = torch.from_dlpack(block.__dlpack__())
+print(f"Block tensor shape: {block_tensor.shape}")
+
+# Convert to NumPy array
+block_array = np.from_dlpack(block.__dlpack__())
+print(f"Block array shape: {block_array.shape}")
+
+# Get device information
+device_info = block.__dlpack_device__()
+print(f"Block device: {device_info}")
+</code></pre>
+<h3 id="block-properties"><a class="header" href="#block-properties">Block Properties</a></h3>
+<pre><code class="language-python"># Get block metadata
+print(f"Number of layers: {len(block)}")
+print(f"Device ID: {block.device_id}")
+print(f"Data type: {block.dtype}")
+
+# Check if block is valid
+if block:
+    print("Block is valid")
+else:
+    print("Block is invalid")
+</code></pre>
+<h2 id="layer-class"><a class="header" href="#layer-class">Layer Class</a></h2>
+<p>The <code>Layer</code> class represents a single layer within a block. It provides access to the layer's data and supports DLPack for tensor operations.</p>
+<h3 id="basic-usage-1"><a class="header" href="#basic-usage-1">Basic Usage</a></h3>
+<pre><code class="language-python"># Get a layer from a block
+layer = block[0]
+
+# Get layer information
+print(f"Layer shape: {layer.shape}")
+print(f"Layer dtype: {layer.dtype}")
+print(f"Layer device ID: {layer.device_id}")
+</code></pre>
+<h3 id="data-access"><a class="header" href="#data-access">Data Access</a></h3>
+<pre><code class="language-python">import torch
+
+# Convert layer to PyTorch tensor
+tensor = torch.from_dlpack(layer.__dlpack__())
+print(f"Tensor shape: {tensor.shape}")
+print(f"Tensor dtype: {tensor.dtype}")
+
+# Perform tensor operations
+mean = tensor.mean()
+std = tensor.std()
+max_val = tensor.max()
+min_val = tensor.min()
+
+print(f"Layer statistics: mean={mean:.4f}, std={std:.4f}")
+print(f"Value range: [{min_val:.4f}, {max_val:.4f}]")
+</code></pre>
+<h3 id="numpy-integration"><a class="header" href="#numpy-integration">NumPy Integration</a></h3>
+<pre><code class="language-python">import numpy as np
+
+# Convert layer to NumPy array
+array = np.from_dlpack(layer.__dlpack__())
+print(f"Array shape: {array.shape}")
+print(f"Array dtype: {array.dtype}")
+
+# Perform NumPy operations
+mean = np.mean(array)
+std = np.std(array)
+percentiles = np.percentile(array, [25, 50, 75])
+
+print(f"NumPy statistics: mean={mean:.4f}, std={std:.4f}")
+print(f"Percentiles: 25%={percentiles[0]:.4f}, 50%={percentiles[1]:.4f}, 75%={percentiles[2]:.4f}")
+</code></pre>
+<h3 id="cupy-integration-gpu-arrays"><a class="header" href="#cupy-integration-gpu-arrays">CuPy Integration (GPU Arrays)</a></h3>
+<pre><code class="language-python">import cupy as cp
+
+# Convert layer to CuPy array for GPU operations
+gpu_array = cp.from_dlpack(layer.__dlpack__())
+print(f"GPU array shape: {gpu_array.shape}")
+
+# Perform GPU operations
+norm = cp.linalg.norm(gpu_array)
+eigenvals = cp.linalg.eigvals(gpu_array)
+
+print(f"GPU norm: {norm:.4f}")
+print(f"Eigenvalues shape: {eigenvals.shape}")
+</code></pre>
+<h2 id="advanced-usage"><a class="header" href="#advanced-usage">Advanced Usage</a></h2>
+<h3 id="batch-processing"><a class="header" href="#batch-processing">Batch Processing</a></h3>
+<pre><code class="language-python">import torch
+import dynamo_llm
+
+def process_block_layers(block):
+    """Process all layers in a block."""
+    results = []
+    
+    for layer_idx in range(len(block)):
+        layer = block[layer_idx]
+        tensor = torch.from_dlpack(layer.__dlpack__())
+        
+        # Process layer data
+        result = torch.softmax(tensor, dim=-1)
+        results.append(result)
+    
+    return results
+
+# Process multiple blocks
+blocks = block_manager.allocate_blocks(4)
+all_results = []
+
+for block in blocks:
+    block_results = process_block_layers(block)
+    all_results.extend(block_results)
+
+print(f"Processed {len(all_results)} layers total")
+</code></pre>
+<h3 id="memory-efficient-processing"><a class="header" href="#memory-efficient-processing">Memory-Efficient Processing</a></h3>
+<pre><code class="language-python">def memory_efficient_layer_processing(block):
+    """Process layers with minimal memory usage."""
+    for layer_idx in range(len(block)):
+        layer = block[layer_idx]
+        
+        # Process layer in chunks to avoid memory issues
+        tensor = torch.from_dlpack(layer.__dlpack__())
+        
+        # Process in smaller chunks if needed
+        chunk_size = 1000
+        for i in range(0, tensor.shape[0], chunk_size):
+            chunk = tensor[i:i+chunk_size]
+            # Process chunk
+            result = torch.softmax(chunk, dim=-1)
+            # Use result...
+        
+        # Explicitly delete tensor to free memory
+        del tensor
+</code></pre>
+<h3 id="custom-layer-processing"><a class="header" href="#custom-layer-processing">Custom Layer Processing</a></h3>
+<pre><code class="language-python">class LayerProcessor:
+    def __init__(self, model_config):
+        self.model_config = model_config
+    
+    def process_layer(self, layer, layer_idx):
+        """Process a single layer with custom logic."""
+        tensor = torch.from_dlpack(layer.__dlpack__())
+        
+        # Apply layer-specific processing
+        if layer_idx &lt; self.model_config.num_layers // 2:
+            # Early layers: apply attention
+            result = self.apply_attention(tensor)
+        else:
+            # Later layers: apply feedforward
+            result = self.apply_feedforward(tensor)
+        
+        return result
+    
+    def apply_attention(self, tensor):
+        # Custom attention logic
+        return torch.softmax(tensor, dim=-1)
+    
+    def apply_feedforward(self, tensor):
+        # Custom feedforward logic
+        return torch.relu(tensor)
+
+# Use custom processor
+processor = LayerProcessor(model_config)
+blocks = block_manager.allocate_blocks(2)
+
+for block in blocks:
+    for layer_idx in range(len(block)):
+        layer = block[layer_idx]
+        result = processor.process_layer(layer, layer_idx)
+        # Use result...
+</code></pre>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<h3 id="block-access-errors"><a class="header" href="#block-access-errors">Block Access Errors</a></h3>
+<pre><code class="language-python">try:
+    # Try to access non-existent layer
+    layer = block[100]  # Index out of range
+except IndexError as e:
+    print(f"Layer access error: {e}")
+
+try:
+    # Try to access invalid block
+    invalid_block = None
+    layer = invalid_block[0]
+except AttributeError as e:
+    print(f"Block access error: {e}")
+</code></pre>
+<h3 id="dlpack-errors"><a class="header" href="#dlpack-errors">DLPack Errors</a></h3>
+<pre><code class="language-python">try:
+    # Try to convert layer to tensor
+    tensor = torch.from_dlpack(layer.__dlpack__())
+except Exception as e:
+    print(f"DLPack conversion error: {e}")
+    # Fallback to other methods
+</code></pre>
+<h3 id="memory-errors"><a class="header" href="#memory-errors">Memory Errors</a></h3>
+<pre><code class="language-python">try:
+    # Try to process large layer
+    tensor = torch.from_dlpack(layer.__dlpack__())
+    result = torch.softmax(tensor, dim=-1)
+except RuntimeError as e:
+    if "out of memory" in str(e):
+        print("GPU memory exhausted, processing in chunks")
+        # Implement chunked processing
+    else:
+        raise
+</code></pre>
+<h2 id="performance-considerations"><a class="header" href="#performance-considerations">Performance Considerations</a></h2>
+<h3 id="efficient-iteration"><a class="header" href="#efficient-iteration">Efficient Iteration</a></h3>
+<pre><code class="language-python"># Efficient iteration over layers
+for layer in block:
+    # Process layer
+    tensor = torch.from_dlpack(layer.__dlpack__())
+    # ... processing ...
+
+# Less efficient: accessing by index
+for i in range(len(block)):
+    layer = block[i]  # Additional overhead
+    tensor = torch.from_dlpack(layer.__dlpack__())
+    # ... processing ...
+</code></pre>
+<h3 id="memory-management"><a class="header" href="#memory-management">Memory Management</a></h3>
+<pre><code class="language-python">def process_layers_with_cleanup(block):
+    """Process layers with explicit memory cleanup."""
+    results = []
+    
+    for layer in block:
+        # Convert to tensor
+        tensor = torch.from_dlpack(layer.__dlpack__())
+        
+        # Process tensor
+        result = torch.softmax(tensor, dim=-1)
+        results.append(result)
+        
+        # Explicitly delete tensor to free memory
+        del tensor
+    
+    return results
+</code></pre>
+<h3 id="batch-processing-1"><a class="header" href="#batch-processing-1">Batch Processing</a></h3>
+<pre><code class="language-python">def batch_process_layers(blocks, batch_size=4):
+    """Process multiple layers in batches."""
+    all_layers = []
+    
+    # Collect all layers
+    for block in blocks:
+        for layer in block:
+            all_layers.append(layer)
+    
+    # Process in batches
+    results = []
+    for i in range(0, len(all_layers), batch_size):
+        batch = all_layers[i:i+batch_size]
+        
+        # Convert batch to tensors
+        tensors = [torch.from_dlpack(layer.__dlpack__()) for layer in batch]
+        
+        # Process batch
+        batch_results = torch.stack(tensors)
+        processed = torch.softmax(batch_results, dim=-1)
+        
+        results.extend(processed)
+    
+    return results
+</code></pre>
+<h2 id="type-hints"><a class="header" href="#type-hints">Type Hints</a></h2>
+<p>The Python API includes comprehensive type hints for better IDE support:</p>
+<pre><code class="language-python">from typing import List, Optional, Tuple
+import dynamo_llm
+
+def process_block(block: dynamo_llm.Block) -&gt; List[torch.Tensor]:
+    """Process a block and return list of processed tensors."""
+    results: List[torch.Tensor] = []
+    
+    for layer in block:
+        tensor = torch.from_dlpack(layer.__dlpack__())
+        result = torch.softmax(tensor, dim=-1)
+        results.append(result)
+    
+    return results
+
+def get_layer_info(layer: dynamo_llm.Layer) -&gt; Tuple[Tuple[int, ...], dynamo_llm.DType]:
+    """Get layer shape and data type."""
+    return layer.shape, layer.dtype
+</code></pre>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<ul>
+<li><a href="dlpack.html">DLPack Integration</a> - Learn about tensor interoperability</li>
+<li><a href="vllm.html">vLLM Integration</a> - Production deployment with vLLM</li>
+<li><a href="block_list.html">Block Lists</a> - Manage collections of blocks</li>
+<li><a href="examples/basic_usage.html">Examples</a> - Practical usage examples</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../python/overview.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../python/layer.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../python/overview.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../python/layer.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

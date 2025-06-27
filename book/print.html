@@ -1,0 +1,3731 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>KV Block Manager</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">KV Block Manager</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="kv-block-manager"><a class="header" href="#kv-block-manager">KV Block Manager</a></h1>
+<p>The KV Block Manager is a high-performance, memory-efficient system for managing key-value (KV) cache blocks in Large Language Model (LLM) inference. It provides a unified interface for managing blocks across different storage types including GPU memory, CPU memory, and remote storage.</p>
+<h2 id="key-features"><a class="header" href="#key-features">Key Features</a></h2>
+<ul>
+<li><strong>Multi-tier Storage</strong>: Support for GPU memory, CPU memory, local NVMe, and remote storage</li>
+<li><strong>Block Reuse</strong>: Intelligent caching and reuse of KV blocks to reduce memory footprint</li>
+<li><strong>Distributed Support</strong>: Built-in support for distributed inference across multiple workers</li>
+<li><strong>Python Integration</strong>: Native Python bindings with DLPack support for seamless integration</li>
+<li><strong>vLLM Compatibility</strong>: Direct integration with vLLM for production deployments</li>
+<li><strong>Performance Optimized</strong>: Designed for high-throughput inference with minimal latency</li>
+</ul>
+<h2 id="architecture-overview"><a class="header" href="#architecture-overview">Architecture Overview</a></h2>
+<p>The KV Block Manager consists of several core components:</p>
+<ul>
+<li><strong>Block Manager</strong>: The main orchestrator that manages block allocation and lifecycle</li>
+<li><strong>Block Pool</strong>: Efficient pool management for block reuse and allocation</li>
+<li><strong>Storage System</strong>: Unified interface for different storage backends</li>
+<li><strong>Layout Management</strong>: Flexible data layout strategies for optimal performance</li>
+<li><strong>Offloading</strong>: Intelligent block movement between storage tiers</li>
+<li><strong>Distributed Management</strong>: Coordination across multiple workers</li>
+</ul>
+<h2 id="quick-start"><a class="header" href="#quick-start">Quick Start</a></h2>
+<h3 id="rust-usage"><a class="header" href="#rust-usage">Rust Usage</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::{
+    KvBlockManager, KvBlockManagerConfig, KvManagerModelConfig, KvManagerRuntimeConfig
+};
+
+// Create configuration
+let config = KvBlockManagerConfig::builder()
+    .runtime(KvManagerRuntimeConfig::builder()
+        .worker_id(0)
+        .build())
+    .model(KvManagerModelConfig::builder()
+        .num_layers(32)
+        .page_size(16)
+        .inner_dim(4096)
+        .build())
+    .build()?;
+
+// Create block manager
+let block_manager = KvBlockManager::new(config).await?;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="python-usage"><a class="header" href="#python-usage">Python Usage</a></h3>
+<pre><code class="language-python">import dynamo_llm
+
+# Create block manager
+block_manager = dynamo_llm.BlockManager(
+    num_layers=32,
+    page_size=16,
+    inner_dim=4096
+)
+
+# Allocate blocks
+blocks = block_manager.allocate_blocks(4)
+
+# Use blocks for inference
+for block in blocks:
+    # Access layer data
+    layer_data = block[0]  # Get first layer
+    # Process layer...
+</code></pre>
+<h2 id="storage-tiers"><a class="header" href="#storage-tiers">Storage Tiers</a></h2>
+<p>The KV Block Manager supports multiple storage tiers:</p>
+<ul>
+<li><strong>G1 (GPU Memory)</strong>: Fastest access, limited capacity</li>
+<li><strong>G2 (CPU Memory)</strong>: Medium speed, larger capacity</li>
+<li><strong>G3 (Local NVMe)</strong>: Slower access, very large capacity</li>
+<li><strong>G4 (Remote Storage)</strong>: Slowest access, unlimited capacity</li>
+</ul>
+<h2 id="performance-characteristics"><a class="header" href="#performance-characteristics">Performance Characteristics</a></h2>
+<ul>
+<li><strong>Latency</strong>: Sub-millisecond block allocation and access</li>
+<li><strong>Throughput</strong>: Support for thousands of concurrent requests</li>
+<li><strong>Memory Efficiency</strong>: Intelligent block reuse reduces memory footprint by 50-80%</li>
+<li><strong>Scalability</strong>: Linear scaling with additional workers</li>
+</ul>
+<h2 id="integration"><a class="header" href="#integration">Integration</a></h2>
+<p>The KV Block Manager integrates seamlessly with:</p>
+<ul>
+<li><strong>vLLM</strong>: Production-ready inference serving</li>
+<li><strong>PyTorch</strong>: Native tensor operations via DLPack</li>
+<li><strong>Custom Inference Engines</strong>: Flexible API for custom implementations</li>
+<li><strong>Distributed Systems</strong>: Built-in support for multi-node deployments</li>
+</ul>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<ul>
+<li><a href="core/overview.html">Core Architecture</a> - Learn about the internal architecture</li>
+<li><a href="python/overview.html">Python API</a> - Explore the Python interface</li>
+<li><a href="examples/basic_usage.html">Examples</a> - See practical usage examples</li>
+<li><a href="api/rust.html">API Reference</a> - Detailed API documentation</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="core-architecture-overview"><a class="header" href="#core-architecture-overview">Core Architecture Overview</a></h1>
+<p>The KV Block Manager is built around a modular architecture that separates concerns and provides flexibility for different deployment scenarios. This document provides a high-level overview of the core components and their interactions.</p>
+<h2 id="architecture-components"><a class="header" href="#architecture-components">Architecture Components</a></h2>
+<pre><code class="language-mermaid">graph TB
+    A[KvBlockManager] --&gt; B[Block Pool]
+    A --&gt; C[Storage System]
+    A --&gt; D[Layout Manager]
+    A --&gt; E[Offload Manager]
+    A --&gt; F[Event Manager]
+    
+    B --&gt; G[Active Pool]
+    B --&gt; H[Inactive Pool]
+    B --&gt; I[Block Registry]
+    
+    C --&gt; J[Device Storage]
+    C --&gt; K[Host Storage]
+    C --&gt; L[Disk Storage]
+    C --&gt; M[NIXL Storage]
+    
+    D --&gt; N[Contiguous Layout]
+    D --&gt; O[Paged Layout]
+    D --&gt; P[Custom Layout]
+    
+    E --&gt; Q[Block Transfer]
+    E --&gt; R[Priority Management]
+</code></pre>
+<h2 id="core-components"><a class="header" href="#core-components">Core Components</a></h2>
+<h3 id="1-kvblockmanager"><a class="header" href="#1-kvblockmanager">1. KvBlockManager</a></h3>
+<p>The main entry point that orchestrates all block management operations. It provides:</p>
+<ul>
+<li><strong>Block Allocation</strong>: Request and manage blocks for inference</li>
+<li><strong>Block Registration</strong>: Register completed blocks for reuse</li>
+<li><strong>Block Matching</strong>: Find existing blocks that match sequence hashes</li>
+<li><strong>Storage Access</strong>: Provide access to different storage tiers</li>
+<li><strong>Lifecycle Management</strong>: Handle block creation, usage, and cleanup</li>
+</ul>
+<h3 id="2-block-pool"><a class="header" href="#2-block-pool">2. Block Pool</a></h3>
+<p>Manages the lifecycle of blocks across different states:</p>
+<ul>
+<li><strong>Active Pool</strong>: Tracks blocks currently in use by sequences</li>
+<li><strong>Inactive Pool</strong>: Manages available blocks for allocation</li>
+<li><strong>Block Registry</strong>: Maintains metadata about registered blocks</li>
+<li><strong>Priority Management</strong>: Implements eviction strategies for block reuse</li>
+</ul>
+<h3 id="3-storage-system"><a class="header" href="#3-storage-system">3. Storage System</a></h3>
+<p>Provides a unified interface for different storage backends:</p>
+<ul>
+<li><strong>Device Storage</strong>: GPU memory management</li>
+<li><strong>Host Storage</strong>: CPU memory management</li>
+<li><strong>Disk Storage</strong>: Local NVMe storage</li>
+<li><strong>NIXL Storage</strong>: Remote storage via NIXL protocol</li>
+</ul>
+<h3 id="4-layout-management"><a class="header" href="#4-layout-management">4. Layout Management</a></h3>
+<p>Handles data layout strategies for optimal performance:</p>
+<ul>
+<li><strong>Contiguous Layout</strong>: Simple linear memory layout</li>
+<li><strong>Paged Layout</strong>: Block-based memory organization</li>
+<li><strong>Custom Layout</strong>: User-defined layout strategies</li>
+</ul>
+<h3 id="5-offload-manager"><a class="header" href="#5-offload-manager">5. Offload Manager</a></h3>
+<p>Manages block movement between storage tiers:</p>
+<ul>
+<li><strong>Block Transfer</strong>: Efficient data movement between tiers</li>
+<li><strong>Priority Management</strong>: Intelligent offloading decisions</li>
+<li><strong>Background Processing</strong>: Asynchronous block operations</li>
+</ul>
+<h2 id="data-flow"><a class="header" href="#data-flow">Data Flow</a></h2>
+<h3 id="block-allocation-flow"><a class="header" href="#block-allocation-flow">Block Allocation Flow</a></h3>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant Client
+    participant BlockManager
+    participant BlockPool
+    participant Storage
+    
+    Client-&gt;&gt;BlockManager: allocate_blocks(count)
+    BlockManager-&gt;&gt;BlockPool: allocate_blocks(count)
+    BlockPool-&gt;&gt;Storage: get_blocks(count)
+    Storage--&gt;&gt;BlockPool: blocks
+    BlockPool--&gt;&gt;BlockManager: MutableBlocks
+    BlockManager--&gt;&gt;Client: MutableBlocks
+</code></pre>
+<h3 id="block-registration-flow"><a class="header" href="#block-registration-flow">Block Registration Flow</a></h3>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant Client
+    participant BlockManager
+    participant BlockPool
+    participant Registry
+    
+    Client-&gt;&gt;BlockManager: register_blocks(blocks)
+    BlockManager-&gt;&gt;BlockPool: register_blocks(blocks)
+    BlockPool-&gt;&gt;Registry: check_existing(hashes)
+    Registry--&gt;&gt;BlockPool: existing_blocks
+    BlockPool--&gt;&gt;BlockManager: ImmutableBlocks
+    BlockManager--&gt;&gt;Client: ImmutableBlocks
+</code></pre>
+<h2 id="key-design-principles"><a class="header" href="#key-design-principles">Key Design Principles</a></h2>
+<h3 id="1-separation-of-concerns"><a class="header" href="#1-separation-of-concerns">1. Separation of Concerns</a></h3>
+<p>Each component has a well-defined responsibility:</p>
+<ul>
+<li><strong>BlockManager</strong>: High-level orchestration</li>
+<li><strong>BlockPool</strong>: Block lifecycle management</li>
+<li><strong>Storage</strong>: Memory management</li>
+<li><strong>Layout</strong>: Data organization</li>
+<li><strong>Offload</strong>: Tier management</li>
+</ul>
+<h3 id="2-type-safety"><a class="header" href="#2-type-safety">2. Type Safety</a></h3>
+<p>The system uses Rust's type system to ensure:</p>
+<ul>
+<li><strong>Storage Type Safety</strong>: Compile-time guarantees about storage types</li>
+<li><strong>Block State Safety</strong>: Prevents invalid state transitions</li>
+<li><strong>Thread Safety</strong>: Safe concurrent access patterns</li>
+</ul>
+<h3 id="3-performance-optimization"><a class="header" href="#3-performance-optimization">3. Performance Optimization</a></h3>
+<p>Multiple optimization strategies:</p>
+<ul>
+<li><strong>Block Reuse</strong>: Minimize memory allocation overhead</li>
+<li><strong>Efficient Layouts</strong>: Optimize memory access patterns</li>
+<li><strong>Async Operations</strong>: Non-blocking I/O operations</li>
+<li><strong>Smart Eviction</strong>: Priority-based block management</li>
+</ul>
+<h3 id="4-extensibility"><a class="header" href="#4-extensibility">4. Extensibility</a></h3>
+<p>The modular design allows for:</p>
+<ul>
+<li><strong>Custom Storage</strong>: Implement new storage backends</li>
+<li><strong>Custom Layouts</strong>: Define new data organization strategies</li>
+<li><strong>Custom Policies</strong>: Implement custom eviction strategies</li>
+<li><strong>Plugin Architecture</strong>: Add new functionality without core changes</li>
+</ul>
+<h2 id="threading-model"><a class="header" href="#threading-model">Threading Model</a></h2>
+<p>The KV Block Manager uses a multi-threaded architecture:</p>
+<ul>
+<li><strong>Main Thread</strong>: Handles client requests and coordination</li>
+<li><strong>Background Threads</strong>: Process async operations (offloading, cleanup)</li>
+<li><strong>Worker Threads</strong>: Handle block transfers and I/O operations</li>
+<li><strong>Event Loop</strong>: Manages async task scheduling</li>
+</ul>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<p>The system provides comprehensive error handling:</p>
+<ul>
+<li><strong>Storage Errors</strong>: Handle allocation and access failures</li>
+<li><strong>Block Errors</strong>: Manage invalid block states</li>
+<li><strong>Network Errors</strong>: Handle distributed operation failures</li>
+<li><strong>Recovery Mechanisms</strong>: Automatic error recovery where possible</li>
+</ul>
+<h2 id="configuration"><a class="header" href="#configuration">Configuration</a></h2>
+<p>The system is highly configurable through:</p>
+<ul>
+<li><strong>Runtime Configuration</strong>: Worker settings, async runtime</li>
+<li><strong>Model Configuration</strong>: Layer count, dimensions, data types</li>
+<li><strong>Storage Configuration</strong>: Memory allocation, storage types</li>
+<li><strong>Layout Configuration</strong>: Data organization strategies</li>
+<li><strong>Policy Configuration</strong>: Eviction and offloading policies</li>
+</ul>
+<h2 id="next-steps-1"><a class="header" href="#next-steps-1">Next Steps</a></h2>
+<ul>
+<li><a href="core/block_manager.html">Block Manager Details</a> - Deep dive into the main orchestrator</li>
+<li><a href="core/configuration.html">Configuration System</a> - Learn about configuration options</li>
+<li><a href="core/storage.html">Storage System</a> - Understand storage backends</li>
+<li><a href="core/block_pool.html">Block Pool</a> - Explore block lifecycle management</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="block-manager"><a class="header" href="#block-manager">Block Manager</a></h1>
+<p>The <code>KvBlockManager</code> is the central orchestrator of the KV cache management system. It provides a unified interface for managing blocks across different storage tiers and coordinates all block-related operations.</p>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>The <code>KvBlockManager</code> is a generic structure that can work with different metadata types and storage configurations. It manages the lifecycle of KV cache blocks from allocation to cleanup, providing efficient access patterns for LLM inference.</p>
+<h2 id="core-structure"><a class="header" href="#core-structure">Core Structure</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct KvBlockManager&lt;Metadata: BlockMetadata&gt; {
+    state: Arc&lt;state::KvBlockManagerState&lt;locality::Local, Metadata&gt;&gt;,
+    _cancellation_token: Arc&lt;CancelOnLastDrop&gt;,
+    block_size: usize,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="type-parameters"><a class="header" href="#type-parameters">Type Parameters</a></h3>
+<ul>
+<li><strong><code>Metadata</code></strong>: The metadata type associated with blocks. Must implement <code>BlockMetadata</code> trait.</li>
+</ul>
+<h3 id="fields"><a class="header" href="#fields">Fields</a></h3>
+<ul>
+<li><strong><code>state</code></strong>: Shared state containing all block pools and configuration</li>
+<li><strong><code>_cancellation_token</code></strong>: Token for graceful shutdown of background tasks</li>
+<li><strong><code>block_size</code></strong>: Size of each block in tokens</li>
+</ul>
+<h2 id="creation-and-configuration"><a class="header" href="#creation-and-configuration">Creation and Configuration</a></h2>
+<h3 id="basic-configuration"><a class="header" href="#basic-configuration">Basic Configuration</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::{
+    KvBlockManager, KvBlockManagerConfig, KvManagerModelConfig, KvManagerRuntimeConfig
+};
+
+// Create runtime configuration
+let runtime_config = KvManagerRuntimeConfig::builder()
+    .worker_id(0)
+    .enable_nixl()  // Enable NIXL for remote storage
+    .build();
+
+// Create model configuration
+let model_config = KvManagerModelConfig::builder()
+    .num_layers(32)
+    .outer_dim(2)      // Key and Value dimensions
+    .page_size(16)     // Tokens per block
+    .inner_dim(4096)   // Hidden dimension size
+    .dtype(DType::FP16)
+    .build();
+
+// Create main configuration
+let config = KvBlockManagerConfig::builder()
+    .runtime(runtime_config)
+    .model(model_config)
+    .build()?;
+
+// Create block manager
+let block_manager = KvBlockManager::new(config).await?;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="advanced-configuration"><a class="header" href="#advanced-configuration">Advanced Configuration</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Configure storage layouts
+let device_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(1000)
+    .layout_type(LayoutType::FullyContiguous)
+    .allocator(DeviceAllocator::default())
+    .build();
+
+let host_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(500)
+    .layout_type(LayoutType::Paged)
+    .allocator(PinnedAllocator::default())
+    .build();
+
+let config = KvBlockManagerConfig::builder()
+    .runtime(runtime_config)
+    .model(model_config)
+    .device_layout(device_layout)
+    .host_layout(host_layout)
+    .build()?;
+<span class="boring">}</span></code></pre></pre>
+<h2 id="core-operations"><a class="header" href="#core-operations">Core Operations</a></h2>
+<h3 id="block-allocation"><a class="header" href="#block-allocation">Block Allocation</a></h3>
+<p>Allocate new blocks for inference:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Allocate blocks from device pool
+let device_pool = block_manager.device().unwrap();
+let mut_blocks = device_pool.allocate_blocks_blocking(4)?;
+
+// Allocate blocks from host pool
+let host_pool = block_manager.host().unwrap();
+let host_blocks = host_pool.allocate_blocks_blocking(2)?;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="block-registration"><a class="header" href="#block-registration">Block Registration</a></h3>
+<p>Register completed blocks for reuse:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Register blocks after computation
+let immutable_blocks = device_pool.register_blocks_blocking(mut_blocks)?;
+
+// Get sequence hashes for matching
+let sequence_hashes: Vec&lt;SequenceHash&gt; = immutable_blocks
+    .iter()
+    .map(|block| block.sequence_hash())
+    .collect();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="block-matching"><a class="header" href="#block-matching">Block Matching</a></h3>
+<p>Find existing blocks that match sequence hashes:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Match blocks by sequence hash
+let matched_blocks = device_pool.match_sequence_hashes_blocking(&amp;sequence_hashes)?;
+
+// Check if all blocks were found
+if matched_blocks.len() == sequence_hashes.len() {
+    println!("All blocks found in cache!");
+} else {
+    println!("Some blocks need to be computed");
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="storage-access"><a class="header" href="#storage-access">Storage Access</a></h3>
+<p>Access different storage pools:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Get device pool (GPU memory)
+if let Some(device_pool) = block_manager.device() {
+    println!("Device blocks: {}", device_pool.total_blocks());
+    println!("Available: {}", device_pool.available_blocks());
+}
+
+// Get host pool (CPU memory)
+if let Some(host_pool) = block_manager.host() {
+    println!("Host blocks: {}", host_pool.total_blocks());
+}
+
+// Get disk pool (NVMe storage)
+if let Some(disk_pool) = block_manager.disk() {
+    println!("Disk blocks: {}", disk_pool.total_blocks());
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="distributed-operations"><a class="header" href="#distributed-operations">Distributed Operations</a></h2>
+<h3 id="block-exportimport"><a class="header" href="#block-exportimport">Block Export/Import</a></h3>
+<p>For distributed scenarios, blocks can be exported and imported:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Export local block configuration
+let serialized_blockset = block_manager.export_local_blockset()?;
+
+// Import remote block configuration
+block_manager.import_remote_blockset(serialized_blockset)?;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="remote-block-access"><a class="header" href="#remote-block-access">Remote Block Access</a></h3>
+<p>Access blocks from remote workers:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Get immutable remote blocks
+let remote_blocks = block_manager.get_remote_blocks_immutable(&amp;block_descriptors)?;
+
+// Get mutable remote blocks
+let mut_remote_blocks = block_manager.get_remote_blocks_mutable(&amp;block_descriptors)?;
+<span class="boring">}</span></code></pre></pre>
+<h2 id="block-lifecycle"><a class="header" href="#block-lifecycle">Block Lifecycle</a></h2>
+<h3 id="1-allocation-phase"><a class="header" href="#1-allocation-phase">1. Allocation Phase</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Request blocks from pool
+let mut_blocks = pool.allocate_blocks_blocking(count)?;
+
+// Blocks are now in Mutable state
+for block in &amp;mut_blocks {
+    // Fill block with computed KV cache data
+    fill_block_with_data(block, kv_data);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="2-registration-phase"><a class="header" href="#2-registration-phase">2. Registration Phase</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Register blocks for reuse
+let immutable_blocks = pool.register_blocks_blocking(mut_blocks)?;
+
+// Blocks are now in Immutable state and can be shared
+for block in &amp;immutable_blocks {
+    let sequence_hash = block.sequence_hash();
+    // Store sequence hash for future matching
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="3-usage-phase"><a class="header" href="#3-usage-phase">3. Usage Phase</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Match blocks by sequence hash
+let matched_blocks = pool.match_sequence_hashes_blocking(&amp;hashes)?;
+
+// Use blocks for inference
+for block in &amp;matched_blocks {
+    // Access block data for attention computation
+    let layer_data = block.layer_view(0, 0)?;
+    compute_attention(layer_data);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="4-cleanup-phase"><a class="header" href="#4-cleanup-phase">4. Cleanup Phase</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Blocks are automatically returned to pool when dropped
+// No explicit cleanup needed
+<span class="boring">}</span></code></pre></pre>
+<h2 id="error-handling-1"><a class="header" href="#error-handling-1">Error Handling</a></h2>
+<p>The block manager provides comprehensive error handling:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::BlockPoolError;
+
+match pool.allocate_blocks_blocking(count) {
+    Ok(blocks) =&gt; {
+        // Success - use blocks
+    }
+    Err(BlockPoolError::NotEnoughBlocksAvailable(requested, available)) =&gt; {
+        // Handle insufficient blocks
+        println!("Requested {} blocks, only {} available", requested, available);
+    }
+    Err(BlockPoolError::ProgressEngineShutdown) =&gt; {
+        // Handle shutdown
+        println!("Block manager is shutting down");
+    }
+    Err(e) =&gt; {
+        // Handle other errors
+        println!("Unexpected error: {}", e);
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="performance-considerations"><a class="header" href="#performance-considerations">Performance Considerations</a></h2>
+<h3 id="block-reuse"><a class="header" href="#block-reuse">Block Reuse</a></h3>
+<p>The block manager optimizes memory usage through intelligent block reuse:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Check cache hit rate
+let total_requests = 1000;
+let cache_hits = 750;
+let hit_rate = cache_hits as f64 / total_requests as f64;
+println!("Cache hit rate: {:.2}%", hit_rate * 100.0);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="memory-efficiency"><a class="header" href="#memory-efficiency">Memory Efficiency</a></h3>
+<p>Monitor memory usage across storage tiers:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Check memory usage
+let device_usage = block_manager.device()
+    .map(|pool| pool.total_blocks() - pool.available_blocks())
+    .unwrap_or(0);
+let device_total = block_manager.device()
+    .map(|pool| pool.total_blocks())
+    .unwrap_or(0);
+
+println!("Device memory usage: {}/{} blocks", device_usage, device_total);
+<span class="boring">}</span></code></pre></pre>
+<h2 id="thread-safety"><a class="header" href="#thread-safety">Thread Safety</a></h2>
+<p>The <code>KvBlockManager</code> is designed for concurrent access:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::sync::Arc;
+use tokio::spawn;
+
+let block_manager = Arc::new(block_manager);
+
+// Spawn multiple tasks
+let handles: Vec&lt;_&gt; = (0..4).map(|i| {
+    let bm = block_manager.clone();
+    spawn(async move {
+        let pool = bm.device().unwrap();
+        let blocks = pool.allocate_blocks_blocking(2).unwrap();
+        // Process blocks...
+    })
+}).collect();
+
+// Wait for all tasks
+for handle in handles {
+    handle.await.unwrap();
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="next-steps-2"><a class="header" href="#next-steps-2">Next Steps</a></h2>
+<ul>
+<li><a href="core/configuration.html">Configuration System</a> - Learn about configuration options</li>
+<li><a href="core/block_pool.html">Block Pool</a> - Understand block lifecycle management</li>
+<li><a href="core/storage.html">Storage System</a> - Explore storage backends</li>
+<li><a href="core/python/overview.html">Python API</a> - Use the Python interface</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="configuration-system"><a class="header" href="#configuration-system">Configuration System</a></h1>
+<p>The KV Block Manager uses a comprehensive configuration system that allows fine-grained control over all aspects of block management, storage, and performance. This document covers all configuration options and their usage.</p>
+<h2 id="configuration-structure"><a class="header" href="#configuration-structure">Configuration Structure</a></h2>
+<p>The configuration system is built around several key structures:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct KvBlockManagerConfig {
+    pub runtime: KvManagerRuntimeConfig,
+    pub model: KvManagerModelConfig,
+    pub device_layout: Option&lt;KvManagerLayoutConfig&lt;DeviceStorage&gt;&gt;,
+    pub host_layout: Option&lt;KvManagerLayoutConfig&lt;PinnedStorage&gt;&gt;,
+    pub disk_layout: Option&lt;KvManagerLayoutConfig&lt;DiskStorage&gt;&gt;,
+    pub event_manager: Option&lt;Arc&lt;dyn EventManager&gt;&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="runtime-configuration"><a class="header" href="#runtime-configuration">Runtime Configuration</a></h2>
+<p>The <code>KvManagerRuntimeConfig</code> controls the runtime behavior of the block manager:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, Clone, Builder, Validate)]
+pub struct KvManagerRuntimeConfig {
+    pub worker_id: u64,
+    pub cancellation_token: CancellationToken,
+    pub nixl: NixlOptions,
+    pub async_runtime: Option&lt;Arc&lt;tokio::runtime::Runtime&gt;&gt;,
+    pub metrics_registry: Arc&lt;Registry&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="basic-runtime-configuration"><a class="header" href="#basic-runtime-configuration">Basic Runtime Configuration</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let runtime_config = KvManagerRuntimeConfig::builder()
+    .worker_id(0)
+    .build();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="advanced-runtime-configuration"><a class="header" href="#advanced-runtime-configuration">Advanced Runtime Configuration</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use prometheus::Registry;
+use tokio::runtime::Runtime;
+
+// Create custom runtime
+let runtime = Arc::new(Runtime::new()?);
+
+// Create metrics registry
+let metrics_registry = Arc::new(Registry::new());
+
+// Configure NIXL
+let nixl_agent = NixlAgent::new("my_agent")?;
+
+let runtime_config = KvManagerRuntimeConfig::builder()
+    .worker_id(0)
+    .use_nixl_agent(nixl_agent)
+    .async_runtime(runtime)
+    .metrics_registry(metrics_registry)
+    .build();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="nixl-options"><a class="header" href="#nixl-options">NIXL Options</a></h3>
+<p>NIXL (Network Interface for eXternal Libraries) provides remote storage capabilities:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, Clone)]
+pub enum NixlOptions {
+    /// Enable NIXL and create a new NIXL agent
+    Enabled,
+    
+    /// Enable NIXL and use the provided NIXL agent
+    EnabledWithAgent(NixlAgent),
+    
+    /// Disable NIXL
+    Disabled,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Usage examples:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Enable NIXL with default agent
+let config = KvManagerRuntimeConfig::builder()
+    .worker_id(0)
+    .enable_nixl()
+    .build();
+
+// Enable NIXL with custom agent
+let agent = NixlAgent::new("custom_agent")?;
+let config = KvManagerRuntimeConfig::builder()
+    .worker_id(0)
+    .use_nixl_agent(agent)
+    .build();
+
+// Disable NIXL
+let config = KvManagerRuntimeConfig::builder()
+    .worker_id(0)
+    .disable_nixl()
+    .build();
+<span class="boring">}</span></code></pre></pre>
+<h2 id="model-configuration"><a class="header" href="#model-configuration">Model Configuration</a></h2>
+<p>The <code>KvManagerModelConfig</code> defines the model-specific parameters:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, Clone, Builder, Validate)]
+pub struct KvManagerModelConfig {
+    #[validate(range(min = 1))]
+    pub num_layers: usize,
+    
+    #[validate(range(min = 1, max = 2))]
+    pub outer_dim: usize,
+    
+    #[validate(range(min = 1))]
+    pub page_size: usize,
+    
+    #[validate(range(min = 1))]
+    pub inner_dim: usize,
+    
+    #[builder(default = "DType::FP16")]
+    pub dtype: DType,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="model-configuration-examples"><a class="header" href="#model-configuration-examples">Model Configuration Examples</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Basic model configuration
+let model_config = KvManagerModelConfig::builder()
+    .num_layers(32)
+    .outer_dim(2)      // Key and Value
+    .page_size(16)     // Tokens per block
+    .inner_dim(4096)   // Hidden dimension
+    .build();
+
+// Advanced model configuration
+let model_config = KvManagerModelConfig::builder()
+    .num_layers(48)
+    .outer_dim(2)
+    .page_size(32)     // Larger blocks for better efficiency
+    .inner_dim(8192)   // Larger hidden dimension
+    .dtype(DType::BF16) // Use bfloat16
+    .build();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="validation-rules"><a class="header" href="#validation-rules">Validation Rules</a></h3>
+<p>The model configuration includes validation rules:</p>
+<ul>
+<li><code>num_layers</code>: Must be at least 1</li>
+<li><code>outer_dim</code>: Must be between 1 and 2 (typically 2 for Key/Value)</li>
+<li><code>page_size</code>: Must be at least 1</li>
+<li><code>inner_dim</code>: Must be at least 1</li>
+</ul>
+<h2 id="layout-configuration"><a class="header" href="#layout-configuration">Layout Configuration</a></h2>
+<p>The <code>KvManagerLayoutConfig</code> controls how blocks are organized in memory:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Builder, Validate)]
+pub struct KvManagerLayoutConfig&lt;S: Storage + NixlRegisterableStorage&gt; {
+    #[validate(range(min = 1))]
+    pub num_blocks: usize,
+    
+    #[builder(default = "LayoutType::FullyContiguous")]
+    pub layout_type: LayoutType,
+    
+    pub storage: Option&lt;Vec&lt;S&gt;&gt;,
+    pub allocator: Option&lt;Arc&lt;dyn StorageAllocator&lt;S&gt;&gt;&gt;,
+    pub logical: Option&lt;BlockParallelismStrategy&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="layout-types"><a class="header" href="#layout-types">Layout Types</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, Clone)]
+pub enum LayoutType {
+    /// Simple contiguous memory layout
+    FullyContiguous,
+    
+    /// Block-based memory organization
+    Paged,
+    
+    /// Custom layout strategy
+    Custom(Arc&lt;dyn LayoutStrategy&gt;),
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="layout-configuration-examples"><a class="header" href="#layout-configuration-examples">Layout Configuration Examples</a></h3>
+<h4 id="device-layout-gpu-memory"><a class="header" href="#device-layout-gpu-memory">Device Layout (GPU Memory)</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::storage::DeviceAllocator;
+
+let device_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(1000)
+    .layout_type(LayoutType::FullyContiguous)
+    .allocator(DeviceAllocator::default())
+    .build();
+<span class="boring">}</span></code></pre></pre>
+<h4 id="host-layout-cpu-memory"><a class="header" href="#host-layout-cpu-memory">Host Layout (CPU Memory)</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::storage::PinnedAllocator;
+
+let host_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(500)
+    .layout_type(LayoutType::Paged)
+    .allocator(PinnedAllocator::default())
+    .build();
+<span class="boring">}</span></code></pre></pre>
+<h4 id="disk-layout-nvme-storage"><a class="header" href="#disk-layout-nvme-storage">Disk Layout (NVMe Storage)</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::storage::DiskAllocator;
+
+let disk_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(10000)
+    .layout_type(LayoutType::Paged)
+    .allocator(DiskAllocator::new("/path/to/storage"))
+    .build();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="block-parallelism-strategy"><a class="header" href="#block-parallelism-strategy">Block Parallelism Strategy</a></h3>
+<p>For distributed scenarios, you can configure block parallelism:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, Clone)]
+pub enum BlockParallelismStrategy {
+    /// KV blocks are sharded across all workers
+    LeaderWorkerSharded,
+}
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let device_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(1000)
+    .layout_type(LayoutType::FullyContiguous)
+    .logical(BlockParallelismStrategy::LeaderWorkerSharded)
+    .build();
+<span class="boring">}</span></code></pre></pre>
+<h2 id="complete-configuration-example"><a class="header" href="#complete-configuration-example">Complete Configuration Example</a></h2>
+<p>Here's a complete example showing all configuration options:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::{
+    KvBlockManager, KvBlockManagerConfig, KvManagerModelConfig, KvManagerRuntimeConfig,
+    KvManagerLayoutConfig, LayoutType, BlockParallelismStrategy
+};
+use dynamo_llm::block_manager::storage::{DeviceAllocator, PinnedAllocator, DiskAllocator};
+use dynamo_llm::common::dtype::DType;
+
+// Runtime configuration
+let runtime_config = KvManagerRuntimeConfig::builder()
+    .worker_id(0)
+    .enable_nixl()
+    .build();
+
+// Model configuration
+let model_config = KvManagerModelConfig::builder()
+    .num_layers(32)
+    .outer_dim(2)
+    .page_size(16)
+    .inner_dim(4096)
+    .dtype(DType::FP16)
+    .build();
+
+// Device layout (GPU memory)
+let device_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(1000)
+    .layout_type(LayoutType::FullyContiguous)
+    .allocator(DeviceAllocator::default())
+    .build();
+
+// Host layout (CPU memory)
+let host_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(500)
+    .layout_type(LayoutType::Paged)
+    .allocator(PinnedAllocator::default())
+    .build();
+
+// Disk layout (NVMe storage)
+let disk_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(10000)
+    .layout_type(LayoutType::Paged)
+    .allocator(DiskAllocator::new("/mnt/nvme/kv_cache"))
+    .build();
+
+// Main configuration
+let config = KvBlockManagerConfig::builder()
+    .runtime(runtime_config)
+    .model(model_config)
+    .device_layout(device_layout)
+    .host_layout(host_layout)
+    .disk_layout(disk_layout)
+    .build()?;
+
+// Create block manager
+let block_manager = KvBlockManager::new(config).await?;
+<span class="boring">}</span></code></pre></pre>
+<h2 id="configuration-validation"><a class="header" href="#configuration-validation">Configuration Validation</a></h2>
+<p>The configuration system includes comprehensive validation:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Validation will catch configuration errors
+match KvBlockManagerConfig::builder()
+    .runtime(runtime_config)
+    .model(model_config)
+    .build() {
+    Ok(config) =&gt; {
+        println!("Configuration is valid");
+    }
+    Err(e) =&gt; {
+        println!("Configuration error: {}", e);
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="common-validation-errors"><a class="header" href="#common-validation-errors">Common Validation Errors</a></h3>
+<ul>
+<li><strong>Invalid model parameters</strong>: Layer count, dimensions, or page size out of range</li>
+<li><strong>Missing storage configuration</strong>: No storage layouts provided</li>
+<li><strong>Conflicting options</strong>: Multiple storage/allocator options specified</li>
+<li><strong>Invalid NIXL configuration</strong>: NIXL agent creation failed</li>
+</ul>
+<h2 id="configuration-best-practices"><a class="header" href="#configuration-best-practices">Configuration Best Practices</a></h2>
+<h3 id="1-memory-sizing"><a class="header" href="#1-memory-sizing">1. Memory Sizing</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Calculate optimal block counts based on available memory
+let gpu_memory_gb = 24;
+let block_size_bytes = num_layers * outer_dim * page_size * inner_dim * dtype_size;
+let max_blocks = (gpu_memory_gb * 1024 * 1024 * 1024) / block_size_bytes;
+
+let device_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(max_blocks * 80 / 100) // Use 80% of available memory
+    .build();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="2-multi-tier-storage"><a class="header" href="#2-multi-tier-storage">2. Multi-tier Storage</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Configure storage hierarchy
+let device_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(1000)  // Fast access, limited capacity
+    .build();
+
+let host_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(5000)  // Medium speed, larger capacity
+    .build();
+
+let disk_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(50000) // Slow access, very large capacity
+    .build();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="3-distributed-configuration"><a class="header" href="#3-distributed-configuration">3. Distributed Configuration</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Configure for distributed inference
+let runtime_config = KvManagerRuntimeConfig::builder()
+    .worker_id(worker_id)
+    .enable_nixl()
+    .build();
+
+let device_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(1000)
+    .logical(BlockParallelismStrategy::LeaderWorkerSharded)
+    .build();
+<span class="boring">}</span></code></pre></pre>
+<h2 id="environment-based-configuration"><a class="header" href="#environment-based-configuration">Environment-based Configuration</a></h2>
+<p>You can create configuration based on environment variables:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn create_config_from_env() -&gt; Result&lt;KvBlockManagerConfig&gt; {
+    let worker_id = std::env::var("WORKER_ID")
+        .unwrap_or_else(|_| "0".to_string())
+        .parse()?;
+    
+    let num_layers = std::env::var("NUM_LAYERS")
+        .unwrap_or_else(|_| "32".to_string())
+        .parse()?;
+    
+    let gpu_memory_gb = std::env::var("GPU_MEMORY_GB")
+        .unwrap_or_else(|_| "24".to_string())
+        .parse()?;
+    
+    let runtime_config = KvManagerRuntimeConfig::builder()
+        .worker_id(worker_id)
+        .build();
+    
+    let model_config = KvManagerModelConfig::builder()
+        .num_layers(num_layers)
+        .outer_dim(2)
+        .page_size(16)
+        .inner_dim(4096)
+        .build();
+    
+    let device_layout = KvManagerLayoutConfig::builder()
+        .num_blocks(calculate_blocks(gpu_memory_gb))
+        .allocator(DeviceAllocator::default())
+        .build();
+    
+    KvBlockManagerConfig::builder()
+        .runtime(runtime_config)
+        .model(model_config)
+        .device_layout(device_layout)
+        .build()
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="next-steps-3"><a class="header" href="#next-steps-3">Next Steps</a></h2>
+<ul>
+<li><a href="core/storage.html">Storage System</a> - Learn about storage backends</li>
+<li><a href="core/block_pool.html">Block Pool</a> - Understand block lifecycle management</li>
+<li><a href="core/layout.html">Layout Management</a> - Explore data layout strategies</li>
+<li><a href="core/python/overview.html">Python Configuration</a> - Configure from Python</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="storage-system"><a class="header" href="#storage-system">Storage System</a></h1>
+<p>The KV Block Manager provides a unified storage abstraction that supports multiple storage backends including GPU memory, CPU memory, local NVMe storage, and remote storage. This document covers the storage architecture and how to use different storage types.</p>
+<h2 id="storage-architecture"><a class="header" href="#storage-architecture">Storage Architecture</a></h2>
+<p>The storage system is built around several key abstractions:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait Storage: Debug + Send + Sync + 'static {
+    fn storage_type(&amp;self) -&gt; StorageType;
+    fn addr(&amp;self) -&gt; u64;
+    fn size(&amp;self) -&gt; usize;
+    unsafe fn as_ptr(&amp;self) -&gt; *const u8;
+    unsafe fn as_mut_ptr(&amp;mut self) -&gt; *mut u8;
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="storage-types"><a class="header" href="#storage-types">Storage Types</a></h2>
+<p>The system supports multiple storage types through the <code>StorageType</code> enum:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash)]
+pub enum StorageType {
+    /// System memory
+    System,
+    
+    /// CUDA device memory
+    Device(u32),
+    
+    /// CUDA page-locked host memory
+    Pinned,
+    
+    /// Disk memory
+    Disk(u64),
+    
+    /// Remote memory accessible through NIXL
+    Nixl,
+    
+    /// Null storage (for testing)
+    Null,
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="storage-backends"><a class="header" href="#storage-backends">Storage Backends</a></h2>
+<h3 id="1-system-storage"><a class="header" href="#1-system-storage">1. System Storage</a></h3>
+<p>System memory storage for CPU-based operations:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::storage::{SystemStorage, SystemAllocator};
+
+// Create system storage
+let storage = SystemStorage::new(1024 * 1024)?; // 1MB
+
+// Use system allocator
+let allocator = SystemAllocator;
+let storage = allocator.allocate(1024 * 1024)?;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="2-device-storage-gpu-memory"><a class="header" href="#2-device-storage-gpu-memory">2. Device Storage (GPU Memory)</a></h3>
+<p>CUDA device memory for GPU operations:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::storage::{DeviceStorage, DeviceAllocator};
+
+// Create device storage
+let device_id = 0;
+let storage = DeviceStorage::new(1024 * 1024, device_id)?; // 1MB on GPU 0
+
+// Use device allocator
+let allocator = DeviceAllocator::default();
+let storage = allocator.allocate(1024 * 1024)?;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="3-pinned-storage-page-locked-memory"><a class="header" href="#3-pinned-storage-page-locked-memory">3. Pinned Storage (Page-Locked Memory)</a></h3>
+<p>Page-locked host memory for efficient CPU-GPU transfers:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::storage::{PinnedStorage, PinnedAllocator};
+
+// Create pinned storage
+let storage = PinnedStorage::new(1024 * 1024)?; // 1MB pinned memory
+
+// Use pinned allocator
+let allocator = PinnedAllocator::default();
+let storage = allocator.allocate(1024 * 1024)?;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="4-disk-storage-nvme"><a class="header" href="#4-disk-storage-nvme">4. Disk Storage (NVMe)</a></h3>
+<p>Local NVMe storage for large capacity:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::storage::{DiskStorage, DiskAllocator};
+
+// Create disk storage
+let path = "/mnt/nvme/kv_cache";
+let storage = DiskStorage::new(path, 1024 * 1024 * 1024)?; // 1GB
+
+// Use disk allocator
+let allocator = DiskAllocator::new(path);
+let storage = allocator.allocate(1024 * 1024)?;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="5-nixl-storage-remote"><a class="header" href="#5-nixl-storage-remote">5. NIXL Storage (Remote)</a></h3>
+<p>Remote storage accessible through NIXL protocol:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::storage::nixl::{NixlStorage, NixlAllocator};
+use nixl_sys::Agent as NixlAgent;
+
+// Create NIXL agent
+let agent = NixlAgent::new("remote_storage")?;
+
+// Create NIXL storage
+let storage = NixlStorage::new(&amp;agent, 1024 * 1024)?;
+
+// Use NIXL allocator
+let allocator = NixlAllocator::new(agent);
+let storage = allocator.allocate(1024 * 1024)?;
+<span class="boring">}</span></code></pre></pre>
+<h2 id="storage-allocators"><a class="header" href="#storage-allocators">Storage Allocators</a></h2>
+<p>The system provides allocators for each storage type:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait StorageAllocator&lt;S: Storage&gt;: Send + Sync {
+    fn allocate(&amp;self, size: usize) -&gt; Result&lt;S, StorageError&gt;;
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="allocator-examples"><a class="header" href="#allocator-examples">Allocator Examples</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::storage::{
+    SystemAllocator, DeviceAllocator, PinnedAllocator, DiskAllocator
+};
+
+// System memory allocator
+let system_allocator = SystemAllocator;
+let system_storage = system_allocator.allocate(1024 * 1024)?;
+
+// Device memory allocator
+let device_allocator = DeviceAllocator::default();
+let device_storage = device_allocator.allocate(1024 * 1024)?;
+
+// Pinned memory allocator
+let pinned_allocator = PinnedAllocator::default();
+let pinned_storage = pinned_allocator.allocate(1024 * 1024)?;
+
+// Disk allocator
+let disk_allocator = DiskAllocator::new("/mnt/nvme/kv_cache");
+let disk_storage = disk_allocator.allocate(1024 * 1024)?;
+<span class="boring">}</span></code></pre></pre>
+<h2 id="memory-operations"><a class="header" href="#memory-operations">Memory Operations</a></h2>
+<h3 id="basic-memory-operations"><a class="header" href="#basic-memory-operations">Basic Memory Operations</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::storage::StorageMemset;
+
+// Set memory to zero
+storage.memset(0, 0, storage.size())?;
+
+// Set specific region
+storage.memset(255, 1000, 100)?; // Set 100 bytes starting at offset 1000 to 255
+<span class="boring">}</span></code></pre></pre>
+<h3 id="memory-views"><a class="header" href="#memory-views">Memory Views</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Get read-only view
+let ptr = unsafe { storage.as_ptr() };
+let slice = unsafe { std::slice::from_raw_parts(ptr, storage.size()) };
+
+// Get mutable view
+let mut_ptr = unsafe { storage.as_mut_ptr() };
+let mut_slice = unsafe { std::slice::from_raw_parts_mut(mut_ptr, storage.size()) };
+<span class="boring">}</span></code></pre></pre>
+<h2 id="storage-registration"><a class="header" href="#storage-registration">Storage Registration</a></h2>
+<p>Some storage types can be registered with external libraries:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait RegisterableStorage: Storage + Send + Sync + 'static {
+    fn register(&amp;mut self, key: &amp;str, handle: Box&lt;dyn RegistationHandle&gt;) -&gt; Result&lt;(), StorageError&gt;;
+    fn is_registered(&amp;self, key: &amp;str) -&gt; bool;
+    fn registration_handle(&amp;self, key: &amp;str) -&gt; Option&lt;&amp;dyn RegistationHandle&gt;;
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="nixl-registration"><a class="header" href="#nixl-registration">NIXL Registration</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::storage::nixl::NixlRegisterableStorage;
+use nixl_sys::Agent as NixlAgent;
+
+// Create NIXL agent
+let agent = NixlAgent::new("my_agent")?;
+
+// Create storage
+let mut storage = PinnedStorage::new(1024 * 1024)?;
+
+// Register with NIXL
+storage.nixl_register(&amp;agent, None)?;
+
+// Check registration
+if storage.is_registered("nixl") {
+    println!("Storage is registered with NIXL");
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="storage-configuration"><a class="header" href="#storage-configuration">Storage Configuration</a></h2>
+<h3 id="multi-tier-storage-setup"><a class="header" href="#multi-tier-storage-setup">Multi-tier Storage Setup</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::{
+    KvBlockManagerConfig, KvManagerLayoutConfig, LayoutType
+};
+use dynamo_llm::block_manager::storage::{
+    DeviceAllocator, PinnedAllocator, DiskAllocator
+};
+
+// Device layout (GPU memory) - Fast access, limited capacity
+let device_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(1000)
+    .layout_type(LayoutType::FullyContiguous)
+    .allocator(DeviceAllocator::default())
+    .build();
+
+// Host layout (CPU memory) - Medium speed, larger capacity
+let host_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(5000)
+    .layout_type(LayoutType::Paged)
+    .allocator(PinnedAllocator::default())
+    .build();
+
+// Disk layout (NVMe storage) - Slow access, very large capacity
+let disk_layout = KvManagerLayoutConfig::builder()
+    .num_blocks(50000)
+    .layout_type(LayoutType::Paged)
+    .allocator(DiskAllocator::new("/mnt/nvme/kv_cache"))
+    .build();
+
+// Create block manager with multi-tier storage
+let config = KvBlockManagerConfig::builder()
+    .runtime(runtime_config)
+    .model(model_config)
+    .device_layout(device_layout)
+    .host_layout(host_layout)
+    .disk_layout(disk_layout)
+    .build()?;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="memory-sizing"><a class="header" href="#memory-sizing">Memory Sizing</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn calculate_storage_requirements(
+    num_layers: usize,
+    outer_dim: usize,
+    page_size: usize,
+    inner_dim: usize,
+    dtype_size: usize,
+    num_blocks: usize
+) -&gt; usize {
+    let block_size = num_layers * outer_dim * page_size * inner_dim * dtype_size;
+    block_size * num_blocks
+}
+
+// Example calculation
+let block_size = calculate_storage_requirements(32, 2, 16, 4096, 2, 1000);
+println!("Total storage required: {} bytes ({:.2} GB)", 
+         block_size, block_size as f64 / (1024.0 * 1024.0 * 1024.0));
+<span class="boring">}</span></code></pre></pre>
+<h2 id="error-handling-2"><a class="header" href="#error-handling-2">Error Handling</a></h2>
+<p>The storage system provides comprehensive error handling:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::storage::StorageError;
+
+match storage.allocate(1024 * 1024) {
+    Ok(storage) =&gt; {
+        println!("Storage allocated successfully");
+    }
+    Err(StorageError::AllocationFailed(msg)) =&gt; {
+        println!("Allocation failed: {}", msg);
+    }
+    Err(StorageError::NotAccessible(msg)) =&gt; {
+        println!("Storage not accessible: {}", msg);
+    }
+    Err(StorageError::InvalidConfig(msg)) =&gt; {
+        println!("Invalid configuration: {}", msg);
+    }
+    Err(e) =&gt; {
+        println!("Unexpected error: {}", e);
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="performance-considerations-1"><a class="header" href="#performance-considerations-1">Performance Considerations</a></h2>
+<h3 id="memory-access-patterns"><a class="header" href="#memory-access-patterns">Memory Access Patterns</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Optimize for sequential access
+let storage = SystemStorage::new(1024 * 1024)?;
+let ptr = unsafe { storage.as_ptr() };
+
+// Sequential read
+for i in 0..storage.size() {
+    let byte = unsafe { *ptr.add(i) };
+    // Process byte
+}
+
+// Random access (slower)
+let indices = vec![100, 500, 1000, 2000];
+for &amp;index in &amp;indices {
+    let byte = unsafe { *ptr.add(index) };
+    // Process byte
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="transfer-optimization"><a class="header" href="#transfer-optimization">Transfer Optimization</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Use pinned memory for CPU-GPU transfers
+let pinned_storage = PinnedAllocator::default().allocate(1024 * 1024)?;
+
+// Efficient transfer to GPU
+let device_storage = DeviceAllocator::default().allocate(1024 * 1024)?;
+
+// Transfer data (implementation depends on CUDA bindings)
+transfer_to_device(&amp;pinned_storage, &amp;device_storage)?;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="storage-tiering"><a class="header" href="#storage-tiering">Storage Tiering</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Implement storage tiering based on access patterns
+fn get_optimal_storage(access_frequency: f64, data_size: usize) -&gt; Box&lt;dyn StorageAllocator&gt; {
+    match (access_frequency, data_size) {
+        (freq, _) if freq &gt; 0.8 =&gt; {
+            // High frequency access -&gt; GPU memory
+            Box::new(DeviceAllocator::default())
+        }
+        (freq, size) if freq &gt; 0.3 &amp;&amp; size &lt; 100 * 1024 * 1024 =&gt; {
+            // Medium frequency, small size -&gt; Pinned memory
+            Box::new(PinnedAllocator::default())
+        }
+        _ =&gt; {
+            // Low frequency or large size -&gt; Disk storage
+            Box::new(DiskAllocator::new("/mnt/nvme/kv_cache"))
+        }
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="testing-and-debugging"><a class="header" href="#testing-and-debugging">Testing and Debugging</a></h2>
+<h3 id="null-storage-for-testing"><a class="header" href="#null-storage-for-testing">Null Storage for Testing</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::storage::tests::{NullDeviceStorage, NullDeviceAllocator};
+
+// Create null storage for testing
+let null_storage = NullDeviceStorage::new(1024);
+let null_allocator = NullDeviceAllocator;
+
+// Test allocation
+let test_storage = null_allocator.allocate(1024)?;
+assert_eq!(test_storage.storage_type(), StorageType::Null);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="storage-validation"><a class="header" href="#storage-validation">Storage Validation</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn validate_storage&lt;S: Storage&gt;(storage: &amp;S) -&gt; Result&lt;(), StorageError&gt; {
+    // Check size
+    if storage.size() == 0 {
+        return Err(StorageError::InvalidConfig("Storage size cannot be zero".to_string()));
+    }
+    
+    // Check address
+    if storage.addr() == 0 {
+        return Err(StorageError::InvalidConfig("Storage address cannot be null".to_string()));
+    }
+    
+    // Check pointer validity
+    let ptr = unsafe { storage.as_ptr() };
+    if ptr.is_null() {
+        return Err(StorageError::InvalidConfig("Storage pointer is null".to_string()));
+    }
+    
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="next-steps-4"><a class="header" href="#next-steps-4">Next Steps</a></h2>
+<ul>
+<li><a href="core/block_pool.html">Block Pool</a> - Understand how storage is used in block management</li>
+<li><a href="core/layout.html">Layout Management</a> - Learn about data layout strategies</li>
+<li><a href="core/offload.html">Offloading</a> - Explore block movement between storage tiers</li>
+<li><a href="core/python/overview.html">Python Storage</a> - Use storage from Python</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="block-pool"><a class="header" href="#block-pool">Block Pool</a></h1>
+<p>The Block Pool is the core component responsible for managing the lifecycle of KV cache blocks. It provides efficient allocation, registration, and reuse of blocks through a sophisticated pool management system.</p>
+<h2 id="overview-1"><a class="header" href="#overview-1">Overview</a></h2>
+<p>The Block Pool consists of three main components:</p>
+<ul>
+<li><strong>Active Pool</strong>: Manages blocks currently in use by sequences</li>
+<li><strong>Inactive Pool</strong>: Manages available blocks for allocation</li>
+<li><strong>Block Registry</strong>: Maintains metadata about registered blocks</li>
+</ul>
+<h2 id="architecture"><a class="header" href="#architecture">Architecture</a></h2>
+<pre><code class="language-mermaid">graph TB
+    A[BlockPool] --&gt; B[Active Pool]
+    A --&gt; C[Inactive Pool]
+    A --&gt; D[Block Registry]
+    A --&gt; E[Progress Engine]
+    
+    B --&gt; F[Weak References]
+    B --&gt; G[Active Blocks]
+    
+    C --&gt; H[Available Blocks]
+    C --&gt; I[Eviction Strategy]
+    
+    D --&gt; J[Block Metadata]
+    D --&gt; K[Sequence Hashes]
+    
+    E --&gt; L[Background Tasks]
+    E --&gt; M[Async Operations]
+</code></pre>
+<h2 id="block-states"><a class="header" href="#block-states">Block States</a></h2>
+<p>Blocks transition through several states during their lifecycle:</p>
+<ol>
+<li><strong>Available</strong>: Block is in the inactive pool and ready for allocation</li>
+<li><strong>Allocated</strong>: Block has been allocated and is in mutable state</li>
+<li><strong>Registered</strong>: Block has been registered and is in immutable state</li>
+<li><strong>Active</strong>: Block is being used by one or more sequences</li>
+<li><strong>Returned</strong>: Block has been returned to the inactive pool</li>
+</ol>
+<h2 id="core-operations-1"><a class="header" href="#core-operations-1">Core Operations</a></h2>
+<h3 id="block-allocation-1"><a class="header" href="#block-allocation-1">Block Allocation</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::pool::BlockPool;
+
+// Allocate blocks from pool
+let mut_blocks = pool.allocate_blocks_blocking(4)?;
+println!("Allocated {} blocks", mut_blocks.len());
+
+// Async allocation
+let mut_blocks = pool.allocate_blocks(4).await?;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="block-registration-1"><a class="header" href="#block-registration-1">Block Registration</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Register blocks after computation
+let immutable_blocks = pool.register_blocks_blocking(mut_blocks)?;
+println!("Registered {} blocks", immutable_blocks.len());
+
+// Get sequence hashes for matching
+let sequence_hashes: Vec&lt;SequenceHash&gt; = immutable_blocks
+    .iter()
+    .map(|block| block.sequence_hash())
+    .collect();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="block-matching-1"><a class="header" href="#block-matching-1">Block Matching</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Match blocks by sequence hash
+let matched_blocks = pool.match_sequence_hashes_blocking(&amp;sequence_hashes)?;
+
+if matched_blocks.len() == sequence_hashes.len() {
+    println!("All blocks found in cache!");
+} else {
+    println!("Partial cache hit: {}/{} blocks found", 
+            matched_blocks.len(), sequence_hashes.len());
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="pool-configuration"><a class="header" href="#pool-configuration">Pool Configuration</a></h2>
+<h3 id="basic-pool-setup"><a class="header" href="#basic-pool-setup">Basic Pool Setup</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::pool::BlockPoolArgs;
+
+let pool_args = BlockPoolArgs::builder()
+    .blocks(initial_blocks)
+    .build()?;
+
+let pool = BlockPool::new(pool_args)?;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="advanced-pool-configuration"><a class="header" href="#advanced-pool-configuration">Advanced Pool Configuration</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::{
+    events::EventManager, metrics::BlockManagerMetrics
+};
+
+let pool_args = BlockPoolArgs::builder()
+    .blocks(initial_blocks)
+    .event_manager(Arc::new(MyEventManager::new()))
+    .pool_metrics(metrics.pool("my_pool"))
+    .build()?;
+
+let pool = BlockPool::new(pool_args)?;
+<span class="boring">}</span></code></pre></pre>
+<h2 id="block-lifecycle-management"><a class="header" href="#block-lifecycle-management">Block Lifecycle Management</a></h2>
+<h3 id="1-allocation-phase-1"><a class="header" href="#1-allocation-phase-1">1. Allocation Phase</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Request blocks from pool
+let mut_blocks = pool.allocate_blocks_blocking(count)?;
+
+// Blocks are now in Mutable state
+for block in &amp;mut_blocks {
+    // Fill block with computed KV cache data
+    fill_block_with_data(block, kv_data);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="2-registration-phase-1"><a class="header" href="#2-registration-phase-1">2. Registration Phase</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Register blocks for reuse
+let immutable_blocks = pool.register_blocks_blocking(mut_blocks)?;
+
+// Blocks are now in Immutable state and can be shared
+for block in &amp;immutable_blocks {
+    let sequence_hash = block.sequence_hash();
+    // Store sequence hash for future matching
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="3-usage-phase-1"><a class="header" href="#3-usage-phase-1">3. Usage Phase</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Match blocks by sequence hash
+let matched_blocks = pool.match_sequence_hashes_blocking(&amp;hashes)?;
+
+// Use blocks for inference
+for block in &amp;matched_blocks {
+    // Access block data for attention computation
+    let layer_data = block.layer_view(0, 0)?;
+    compute_attention(layer_data);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="4-cleanup-phase-1"><a class="header" href="#4-cleanup-phase-1">4. Cleanup Phase</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Blocks are automatically returned to pool when dropped
+// No explicit cleanup needed
+<span class="boring">}</span></code></pre></pre>
+<h2 id="eviction-strategies"><a class="header" href="#eviction-strategies">Eviction Strategies</a></h2>
+<p>The inactive pool implements priority-based eviction strategies:</p>
+<h3 id="lru-least-recently-used"><a class="header" href="#lru-least-recently-used">LRU (Least Recently Used)</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Blocks are evicted based on last access time
+// Most recently used blocks are kept in memory
+<span class="boring">}</span></code></pre></pre>
+<h3 id="priority-based-eviction"><a class="header" href="#priority-based-eviction">Priority-Based Eviction</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Blocks are evicted based on priority scores
+// Higher priority blocks are kept longer
+<span class="boring">}</span></code></pre></pre>
+<h3 id="memory-pressure-eviction"><a class="header" href="#memory-pressure-eviction">Memory Pressure Eviction</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Blocks are evicted when memory pressure is high
+// Lower priority blocks are evicted first
+<span class="boring">}</span></code></pre></pre>
+<h2 id="performance-optimizations"><a class="header" href="#performance-optimizations">Performance Optimizations</a></h2>
+<h3 id="block-reuse-1"><a class="header" href="#block-reuse-1">Block Reuse</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Check cache hit rate
+let total_requests = 1000;
+let cache_hits = 750;
+let hit_rate = cache_hits as f64 / total_requests as f64;
+println!("Cache hit rate: {:.2}%", hit_rate * 100.0);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="memory-efficiency-1"><a class="header" href="#memory-efficiency-1">Memory Efficiency</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Monitor memory usage
+let total_blocks = pool.total_blocks();
+let available_blocks = pool.available_blocks();
+let used_blocks = total_blocks - available_blocks;
+let usage_rate = used_blocks as f64 / total_blocks as f64;
+
+println!("Memory usage: {:.2}%", usage_rate * 100.0);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="async-operations"><a class="header" href="#async-operations">Async Operations</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Use async operations for better performance
+let mut_blocks = pool.allocate_blocks(10).await?;
+let immutable_blocks = pool.register_blocks(mut_blocks).await?;
+let matched_blocks = pool.match_sequence_hashes(&amp;hashes).await?;
+<span class="boring">}</span></code></pre></pre>
+<h2 id="error-handling-3"><a class="header" href="#error-handling-3">Error Handling</a></h2>
+<h3 id="allocation-errors"><a class="header" href="#allocation-errors">Allocation Errors</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::pool::BlockPoolError;
+
+match pool.allocate_blocks_blocking(count) {
+    Ok(blocks) =&gt; {
+        println!("Successfully allocated {} blocks", blocks.len());
+    }
+    Err(BlockPoolError::NotEnoughBlocksAvailable(requested, available)) =&gt; {
+        println!("Not enough blocks available. Requested: {}, Available: {}", 
+                requested, available);
+        
+        // Try to allocate what's available
+        if available &gt; 0 {
+            let partial_blocks = pool.allocate_blocks_blocking(available)?;
+            println!("Allocated {} blocks instead", partial_blocks.len());
+        }
+    }
+    Err(e) =&gt; {
+        println!("Allocation error: {}", e);
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="registration-errors"><a class="header" href="#registration-errors">Registration Errors</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>match pool.register_blocks_blocking(mut_blocks) {
+    Ok(immutable_blocks) =&gt; {
+        println!("Successfully registered {} blocks", immutable_blocks.len());
+    }
+    Err(BlockPoolError::BlockNotComplete) =&gt; {
+        println!("Cannot register incomplete blocks");
+    }
+    Err(BlockPoolError::InvalidMutableBlock(msg)) =&gt; {
+        println!("Invalid mutable block: {}", msg);
+    }
+    Err(e) =&gt; {
+        println!("Registration error: {}", e);
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="monitoring-and-metrics"><a class="header" href="#monitoring-and-metrics">Monitoring and Metrics</a></h2>
+<h3 id="pool-metrics"><a class="header" href="#pool-metrics">Pool Metrics</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Get pool statistics
+let total_blocks = pool.total_blocks();
+let available_blocks = pool.available_blocks();
+let used_blocks = total_blocks - available_blocks;
+
+println!("Pool statistics:");
+println!("  Total blocks: {}", total_blocks);
+println!("  Available blocks: {}", available_blocks);
+println!("  Used blocks: {}", used_blocks);
+println!("  Usage rate: {:.2}%", (used_blocks as f64 / total_blocks as f64) * 100.0);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="performance-metrics"><a class="header" href="#performance-metrics">Performance Metrics</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Monitor allocation performance
+let start = std::time::Instant::now();
+let blocks = pool.allocate_blocks_blocking(100)?;
+let duration = start.elapsed();
+
+println!("Allocated 100 blocks in {:?}", duration);
+println!("Average allocation time: {:?}", duration / 100);
+<span class="boring">}</span></code></pre></pre>
+<h2 id="thread-safety-1"><a class="header" href="#thread-safety-1">Thread Safety</a></h2>
+<p>The Block Pool is designed for concurrent access:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::sync::Arc;
+use tokio::spawn;
+
+let pool = Arc::new(pool);
+
+// Spawn multiple tasks
+let handles: Vec&lt;_&gt; = (0..4).map(|i| {
+    let pool = pool.clone();
+    spawn(async move {
+        let blocks = pool.allocate_blocks_blocking(2).unwrap();
+        // Process blocks...
+        println!("Task {} completed", i);
+    })
+}).collect();
+
+// Wait for all tasks
+for handle in handles {
+    handle.await.unwrap();
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="advanced-features"><a class="header" href="#advanced-features">Advanced Features</a></h2>
+<h3 id="custom-eviction-policies"><a class="header" href="#custom-eviction-policies">Custom Eviction Policies</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::pool::EvictionPolicy;
+
+// Implement custom eviction policy
+struct CustomEvictionPolicy;
+
+impl EvictionPolicy for CustomEvictionPolicy {
+    fn should_evict(&amp;self, block: &amp;Block) -&gt; bool {
+        // Custom eviction logic
+        block.last_access_time() &lt; std::time::Instant::now() - Duration::from_secs(300)
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="block-prefetching"><a class="header" href="#block-prefetching">Block Prefetching</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Prefetch blocks based on access patterns
+async fn prefetch_blocks(pool: &amp;BlockPool, predicted_hashes: &amp;[SequenceHash]) {
+    // Try to match predicted blocks
+    let matched = pool.match_sequence_hashes(predicted_hashes).await?;
+    
+    // Allocate blocks for missing predictions
+    let missing_count = predicted_hashes.len() - matched.len();
+    if missing_count &gt; 0 {
+        let new_blocks = pool.allocate_blocks(missing_count).await?;
+        // Pre-compute and register blocks
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="memory-pressure-handling"><a class="header" href="#memory-pressure-handling">Memory Pressure Handling</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Handle memory pressure
+fn handle_memory_pressure(pool: &amp;BlockPool) {
+    let usage = pool.usage_rate();
+    
+    if usage &gt; 0.9 {  // 90% usage
+        println!("High memory usage detected: {:.2}%", usage * 100.0);
+        
+        // Trigger aggressive eviction
+        pool.trigger_eviction(EvictionMode::Aggressive);
+    } else if usage &gt; 0.7 {  // 70% usage
+        println!("Moderate memory usage: {:.2}%", usage * 100.0);
+        
+        // Trigger normal eviction
+        pool.trigger_eviction(EvictionMode::Normal);
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<h3 id="1-efficient-block-usage"><a class="header" href="#1-efficient-block-usage">1. Efficient Block Usage</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Reuse blocks when possible
+let sequence_hashes = compute_sequence_hashes(tokens);
+let matched_blocks = pool.match_sequence_hashes_blocking(&amp;sequence_hashes)?;
+
+if matched_blocks.len() == sequence_hashes.len() {
+    // Use cached blocks
+    use_cached_blocks(matched_blocks);
+} else {
+    // Allocate new blocks only for missing sequences
+    let missing_count = sequence_hashes.len() - matched_blocks.len();
+    let new_blocks = pool.allocate_blocks_blocking(missing_count)?;
+    // Process new blocks...
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="2-memory-management"><a class="header" href="#2-memory-management">2. Memory Management</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Monitor memory usage regularly
+fn monitor_pool_health(pool: &amp;BlockPool) {
+    let usage = pool.usage_rate();
+    let hit_rate = pool.cache_hit_rate();
+    
+    if usage &gt; 0.8 {
+        println!("Warning: High memory usage ({:.2}%)", usage * 100.0);
+    }
+    
+    if hit_rate &lt; 0.5 {
+        println!("Warning: Low cache hit rate ({:.2}%)", hit_rate * 100.0);
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="3-error-recovery"><a class="header" href="#3-error-recovery">3. Error Recovery</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Implement robust error recovery
+async fn robust_block_allocation(pool: &amp;BlockPool, count: usize) -&gt; Result&lt;Vec&lt;MutableBlock&gt;, Box&lt;dyn std::error::Error&gt;&gt; {
+    // Try allocation with exponential backoff
+    let mut retry_count = 0;
+    let max_retries = 3;
+    
+    loop {
+        match pool.allocate_blocks(count).await {
+            Ok(blocks) =&gt; return Ok(blocks),
+            Err(BlockPoolError::NotEnoughBlocksAvailable(requested, available)) =&gt; {
+                if retry_count &gt;= max_retries {
+                    return Err("Failed to allocate blocks after retries".into());
+                }
+                
+                // Wait before retry
+                tokio::time::sleep(Duration::from_millis(100 * (1 &lt;&lt; retry_count))).await;
+                retry_count += 1;
+            }
+            Err(e) =&gt; return Err(e.into()),
+        }
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="next-steps-5"><a class="header" href="#next-steps-5">Next Steps</a></h2>
+<ul>
+<li><a href="core/storage.html">Storage System</a> - Understand storage backends</li>
+<li><a href="core/layout.html">Layout Management</a> - Learn about data layout strategies</li>
+<li><a href="core/offload.html">Offloading</a> - Explore block movement between tiers</li>
+<li><a href="core/events_metrics.html">Events and Metrics</a> - Monitor pool performance</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="block-data"><a class="header" href="#block-data">Block Data</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="layout-management"><a class="header" href="#layout-management">Layout Management</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="offloading"><a class="header" href="#offloading">Offloading</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="distributed-management"><a class="header" href="#distributed-management">Distributed Management</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="events-and-metrics"><a class="header" href="#events-and-metrics">Events and Metrics</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="python-api-overview"><a class="header" href="#python-api-overview">Python API Overview</a></h1>
+<p>The KV Block Manager provides comprehensive Python bindings that enable seamless integration with Python-based machine learning workflows. The Python API offers the same functionality as the Rust implementation while providing a more familiar interface for Python developers.</p>
+<h2 id="key-features-1"><a class="header" href="#key-features-1">Key Features</a></h2>
+<ul>
+<li><strong>Native Python Interface</strong>: Clean, Pythonic API design</li>
+<li><strong>DLPack Integration</strong>: Direct tensor interoperability with PyTorch, NumPy, and other frameworks</li>
+<li><strong>vLLM Integration</strong>: Production-ready integration with vLLM inference serving</li>
+<li><strong>Memory Safety</strong>: Automatic memory management with Python's garbage collection</li>
+<li><strong>Async Support</strong>: Full support for async/await patterns</li>
+<li><strong>Type Hints</strong>: Comprehensive type annotations for better IDE support</li>
+</ul>
+<h2 id="installation"><a class="header" href="#installation">Installation</a></h2>
+<p>The Python bindings are included with the main Dynamo package:</p>
+<pre><code class="language-bash">pip install dynamo-llm
+</code></pre>
+<h2 id="basic-usage"><a class="header" href="#basic-usage">Basic Usage</a></h2>
+<h3 id="creating-a-block-manager"><a class="header" href="#creating-a-block-manager">Creating a Block Manager</a></h3>
+<pre><code class="language-python">import dynamo_llm
+
+# Create a block manager with basic configuration
+block_manager = dynamo_llm.BlockManager(
+    num_layers=32,
+    page_size=16,
+    inner_dim=4096
+)
+
+# Create with advanced configuration
+block_manager = dynamo_llm.BlockManager(
+    num_layers=32,
+    page_size=16,
+    inner_dim=4096,
+    dtype=dynamo_llm.DType.FP16,
+    device_id=0
+)
+</code></pre>
+<h3 id="allocating-blocks"><a class="header" href="#allocating-blocks">Allocating Blocks</a></h3>
+<pre><code class="language-python"># Allocate blocks for inference
+blocks = block_manager.allocate_blocks(4)
+
+# Blocks are returned as a list of Block objects
+for block in blocks:
+    print(f"Block has {len(block)} layers")
+    
+    # Access individual layers
+    for layer_idx in range(len(block)):
+        layer = block[layer_idx]
+        print(f"Layer {layer_idx} shape: {layer.shape}")
+</code></pre>
+<h3 id="working-with-block-data"><a class="header" href="#working-with-block-data">Working with Block Data</a></h3>
+<pre><code class="language-python"># Get a block and access its data
+block = blocks[0]
+layer = block[0]  # Get first layer
+
+# Convert to PyTorch tensor
+import torch
+tensor = torch.from_dlpack(layer.__dlpack__())
+print(f"Tensor shape: {tensor.shape}")
+print(f"Tensor dtype: {tensor.dtype}")
+
+# Convert to NumPy array
+import numpy as np
+array = np.from_dlpack(layer.__dlpack__())
+print(f"Array shape: {array.shape}")
+</code></pre>
+<h2 id="core-classes"><a class="header" href="#core-classes">Core Classes</a></h2>
+<h3 id="blockmanager"><a class="header" href="#blockmanager">BlockManager</a></h3>
+<p>The main entry point for block management operations.</p>
+<pre><code class="language-python">class BlockManager:
+    def __init__(
+        self,
+        num_layers: int,
+        page_size: int,
+        inner_dim: int,
+        dtype: DType = DType.FP16,
+        device_id: int = 0
+    ):
+        ...
+    
+    def allocate_blocks(self, count: int) -&gt; List[Block]:
+        """Allocate new blocks for inference."""
+        ...
+    
+    def get_device_pool(self) -&gt; Optional[BlockPool]:
+        """Get the device (GPU) block pool."""
+        ...
+    
+    def get_host_pool(self) -&gt; Optional[BlockPool]:
+        """Get the host (CPU) block pool."""
+        ...
+</code></pre>
+<h3 id="block"><a class="header" href="#block">Block</a></h3>
+<p>Represents a KV cache block containing multiple layers.</p>
+<pre><code class="language-python">class Block:
+    def __len__(self) -&gt; int:
+        """Return the number of layers in the block."""
+        ...
+    
+    def __getitem__(self, index: int) -&gt; Layer:
+        """Get a layer by index."""
+        ...
+    
+    def __iter__(self) -&gt; Iterator[Layer]:
+        """Iterate over layers."""
+        ...
+    
+    def to_list(self) -&gt; List[Layer]:
+        """Convert block to a list of layers."""
+        ...
+    
+    def __dlpack__(self, stream=None, max_version=None, dl_device=None, copy=None):
+        """Export block data as DLPack tensor."""
+        ...
+</code></pre>
+<h3 id="layer"><a class="header" href="#layer">Layer</a></h3>
+<p>Represents a single layer within a block.</p>
+<pre><code class="language-python">class Layer:
+    def __dlpack__(self, stream=None, max_version=None, dl_device=None, copy=None):
+        """Export layer data as DLPack tensor."""
+        ...
+    
+    @property
+    def shape(self) -&gt; Tuple[int, ...]:
+        """Get the shape of the layer data."""
+        ...
+    
+    @property
+    def dtype(self) -&gt; DType:
+        """Get the data type of the layer."""
+        ...
+</code></pre>
+<h2 id="advanced-usage"><a class="header" href="#advanced-usage">Advanced Usage</a></h2>
+<h3 id="block-pool-management"><a class="header" href="#block-pool-management">Block Pool Management</a></h3>
+<pre><code class="language-python"># Access different storage pools
+device_pool = block_manager.get_device_pool()
+host_pool = block_manager.get_host_pool()
+
+if device_pool:
+    print(f"Device blocks: {device_pool.total_blocks()}")
+    print(f"Available: {device_pool.available_blocks()}")
+    
+    # Allocate from specific pool
+    device_blocks = device_pool.allocate_blocks(2)
+</code></pre>
+<h3 id="block-registration-and-matching"><a class="header" href="#block-registration-and-matching">Block Registration and Matching</a></h3>
+<pre><code class="language-python"># Register blocks after computation
+immutable_blocks = device_pool.register_blocks(device_blocks)
+
+# Get sequence hashes for matching
+sequence_hashes = [block.sequence_hash() for block in immutable_blocks]
+
+# Match blocks by sequence hash
+matched_blocks = device_pool.match_sequence_hashes(sequence_hashes)
+
+if len(matched_blocks) == len(sequence_hashes):
+    print("All blocks found in cache!")
+else:
+    print("Some blocks need to be computed")
+</code></pre>
+<h3 id="memory-management"><a class="header" href="#memory-management">Memory Management</a></h3>
+<pre><code class="language-python"># Check memory usage
+if device_pool:
+    usage = device_pool.usage()
+    print(f"Device memory usage: {usage:.2%}")
+
+# Monitor block allocation
+total_blocks = device_pool.total_blocks()
+available_blocks = device_pool.available_blocks()
+used_blocks = total_blocks - available_blocks
+print(f"Used blocks: {used_blocks}/{total_blocks}")
+</code></pre>
+<h2 id="dlpack-integration"><a class="header" href="#dlpack-integration">DLPack Integration</a></h2>
+<p>The Python bindings provide full DLPack support for seamless tensor interoperability:</p>
+<h3 id="pytorch-integration"><a class="header" href="#pytorch-integration">PyTorch Integration</a></h3>
+<pre><code class="language-python">import torch
+import dynamo_llm
+
+# Create block manager
+block_manager = dynamo_llm.BlockManager(
+    num_layers=32,
+    page_size=16,
+    inner_dim=4096
+)
+
+# Allocate blocks
+blocks = block_manager.allocate_blocks(1)
+block = blocks[0]
+
+# Convert to PyTorch tensors
+for layer_idx in range(len(block)):
+    layer = block[layer_idx]
+    
+    # Convert to PyTorch tensor
+    tensor = torch.from_dlpack(layer.__dlpack__())
+    
+    # Perform operations
+    result = torch.softmax(tensor, dim=-1)
+    
+    # Convert back if needed
+    # Note: This would require additional implementation
+</code></pre>
+<h3 id="numpy-integration"><a class="header" href="#numpy-integration">NumPy Integration</a></h3>
+<pre><code class="language-python">import numpy as np
+import dynamo_llm
+
+# Get layer data as NumPy array
+layer = block[0]
+array = np.from_dlpack(layer.__dlpack__())
+
+# Perform NumPy operations
+mean = np.mean(array)
+std = np.std(array)
+normalized = (array - mean) / std
+</code></pre>
+<h3 id="cupy-integration-gpu-arrays"><a class="header" href="#cupy-integration-gpu-arrays">CuPy Integration (GPU Arrays)</a></h3>
+<pre><code class="language-python">import cupy as cp
+import dynamo_llm
+
+# Convert to CuPy array for GPU operations
+layer = block[0]
+gpu_array = cp.from_dlpack(layer.__dlpack__())
+
+# Perform GPU operations
+result = cp.linalg.norm(gpu_array, axis=-1)
+</code></pre>
+<h2 id="vllm-integration"><a class="header" href="#vllm-integration">vLLM Integration</a></h2>
+<p>The KV Block Manager provides direct integration with vLLM:</p>
+<pre><code class="language-python">import dynamo_llm
+from dynamo_llm.vllm import KvbmCacheManager
+
+# Create block manager
+block_manager = dynamo_llm.BlockManager(
+    num_layers=32,
+    page_size=16,
+    inner_dim=4096
+)
+
+# Create vLLM cache manager
+cache_manager = KvbmCacheManager(block_manager)
+
+# Create a request
+request = KvbmRequest(
+    request_id="req_001",
+    salt_hash=12345
+)
+
+# Create slot for request
+tokens = [1, 2, 3, 4, 5]  # Token IDs
+sequence_hashes = cache_manager.create_slot(request, tokens)
+
+# Get computed blocks
+computed_blocks = cache_manager.get_computed_blocks(sequence_hashes)
+
+# Update slot with new tokens
+update = SlotUpdate(
+    request_id="req_001",
+    request_num_tokens=10,
+    request_num_computed_tokens=5,
+    tokens_to_append=[6, 7, 8, 9, 10],
+    num_new_tokens=5
+)
+
+new_blocks = cache_manager.alloctate_slots(update)
+
+# Clean up
+cache_manager.free("req_001")
+</code></pre>
+<h2 id="error-handling-4"><a class="header" href="#error-handling-4">Error Handling</a></h2>
+<p>The Python API provides comprehensive error handling:</p>
+<pre><code class="language-python">import dynamo_llm
+
+try:
+    # Create block manager
+    block_manager = dynamo_llm.BlockManager(
+        num_layers=32,
+        page_size=16,
+        inner_dim=4096
+    )
+    
+    # Allocate blocks
+    blocks = block_manager.allocate_blocks(1000)  # May fail if not enough memory
+    
+except dynamo_llm.BlockManagerError as e:
+    print(f"Block manager error: {e}")
+    
+except dynamo_llm.StorageError as e:
+    print(f"Storage error: {e}")
+    
+except Exception as e:
+    print(f"Unexpected error: {e}")
+</code></pre>
+<h2 id="performance-considerations-2"><a class="header" href="#performance-considerations-2">Performance Considerations</a></h2>
+<h3 id="memory-efficiency-2"><a class="header" href="#memory-efficiency-2">Memory Efficiency</a></h3>
+<pre><code class="language-python"># Monitor memory usage
+def monitor_memory(block_manager):
+    device_pool = block_manager.get_device_pool()
+    if device_pool:
+        usage = device_pool.usage()
+        print(f"Memory usage: {usage:.2%}")
+        
+        if usage &gt; 0.9:  # 90% usage
+            print("Warning: High memory usage!")
+
+# Use context managers for automatic cleanup
+def process_blocks(block_manager, count):
+    with block_manager.allocate_blocks(count) as blocks:
+        # Process blocks
+        for block in blocks:
+            # ... processing ...
+            pass
+    # Blocks automatically returned to pool
+</code></pre>
+<h3 id="batch-processing"><a class="header" href="#batch-processing">Batch Processing</a></h3>
+<pre><code class="language-python"># Process multiple blocks efficiently
+def process_batch(block_manager, batch_size):
+    blocks = block_manager.allocate_blocks(batch_size)
+    
+    try:
+        # Process all blocks
+        results = []
+        for block in blocks:
+            result = process_block(block)
+            results.append(result)
+        
+        return results
+    
+    finally:
+        # Ensure blocks are returned to pool
+        for block in blocks:
+            del block
+</code></pre>
+<h2 id="type-hints-and-ide-support"><a class="header" href="#type-hints-and-ide-support">Type Hints and IDE Support</a></h2>
+<p>The Python API includes comprehensive type hints:</p>
+<pre><code class="language-python">from typing import List, Optional, Tuple
+import dynamo_llm
+
+def process_layers(block: dynamo_llm.Block) -&gt; List[float]:
+    """Process all layers in a block and return results."""
+    results: List[float] = []
+    
+    for layer in block:
+        # Type hints help with IDE autocomplete
+        tensor = torch.from_dlpack(layer.__dlpack__())
+        result = tensor.mean().item()
+        results.append(result)
+    
+    return results
+
+def allocate_with_fallback(
+    block_manager: dynamo_llm.BlockManager,
+    count: int
+) -&gt; Optional[List[dynamo_llm.Block]]:
+    """Allocate blocks with fallback to host memory."""
+    try:
+        return block_manager.allocate_blocks(count)
+    except dynamo_llm.BlockManagerError:
+        # Fallback to host memory
+        host_pool = block_manager.get_host_pool()
+        if host_pool:
+            return host_pool.allocate_blocks(count)
+        return None
+</code></pre>
+<h2 id="next-steps-6"><a class="header" href="#next-steps-6">Next Steps</a></h2>
+<ul>
+<li><a href="python/block.html">Block Interface</a> - Learn about Block and Layer classes</li>
+<li><a href="python/dlpack.html">DLPack Integration</a> - Understand tensor interoperability</li>
+<li><a href="python/vllm.html">vLLM Integration</a> - Production deployment with vLLM</li>
+<li><a href="python/examples/basic_usage.html">Examples</a> - Practical usage examples</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="block-and-layer-interfaces"><a class="header" href="#block-and-layer-interfaces">Block and Layer Interfaces</a></h1>
+<p>The Python bindings provide <code>Block</code> and <code>Layer</code> classes that represent KV cache blocks and their individual layers. These classes offer a Pythonic interface for accessing and manipulating block data.</p>
+<h2 id="block-class"><a class="header" href="#block-class">Block Class</a></h2>
+<p>The <code>Block</code> class represents a KV cache block containing multiple layers. It provides sequence-like access to layers and supports DLPack for tensor interoperability.</p>
+<h3 id="basic-usage-1"><a class="header" href="#basic-usage-1">Basic Usage</a></h3>
+<pre><code class="language-python">import dynamo_llm
+
+# Create block manager and allocate blocks
+block_manager = dynamo_llm.BlockManager(
+    num_layers=32,
+    page_size=16,
+    inner_dim=4096
+)
+
+blocks = block_manager.allocate_blocks(1)
+block = blocks[0]
+
+# Get block information
+print(f"Block has {len(block)} layers")
+print(f"Block device ID: {block.device_id}")
+print(f"Block dtype: {block.dtype}")
+</code></pre>
+<h3 id="layer-access"><a class="header" href="#layer-access">Layer Access</a></h3>
+<pre><code class="language-python"># Access layers by index
+layer_0 = block[0]
+layer_1 = block[1]
+layer_2 = block[2]
+
+# Iterate over all layers
+for layer_idx, layer in enumerate(block):
+    print(f"Layer {layer_idx}: {layer.shape}")
+
+# Convert to list of layers
+layers = block.to_list()
+print(f"Converted to list with {len(layers)} layers")
+</code></pre>
+<h3 id="dlpack-integration-1"><a class="header" href="#dlpack-integration-1">DLPack Integration</a></h3>
+<pre><code class="language-python">import torch
+import numpy as np
+
+# Convert entire block to PyTorch tensor
+block_tensor = torch.from_dlpack(block.__dlpack__())
+print(f"Block tensor shape: {block_tensor.shape}")
+
+# Convert to NumPy array
+block_array = np.from_dlpack(block.__dlpack__())
+print(f"Block array shape: {block_array.shape}")
+
+# Get device information
+device_info = block.__dlpack_device__()
+print(f"Block device: {device_info}")
+</code></pre>
+<h3 id="block-properties"><a class="header" href="#block-properties">Block Properties</a></h3>
+<pre><code class="language-python"># Get block metadata
+print(f"Number of layers: {len(block)}")
+print(f"Device ID: {block.device_id}")
+print(f"Data type: {block.dtype}")
+
+# Check if block is valid
+if block:
+    print("Block is valid")
+else:
+    print("Block is invalid")
+</code></pre>
+<h2 id="layer-class"><a class="header" href="#layer-class">Layer Class</a></h2>
+<p>The <code>Layer</code> class represents a single layer within a block. It provides access to the layer's data and supports DLPack for tensor operations.</p>
+<h3 id="basic-usage-2"><a class="header" href="#basic-usage-2">Basic Usage</a></h3>
+<pre><code class="language-python"># Get a layer from a block
+layer = block[0]
+
+# Get layer information
+print(f"Layer shape: {layer.shape}")
+print(f"Layer dtype: {layer.dtype}")
+print(f"Layer device ID: {layer.device_id}")
+</code></pre>
+<h3 id="data-access"><a class="header" href="#data-access">Data Access</a></h3>
+<pre><code class="language-python">import torch
+
+# Convert layer to PyTorch tensor
+tensor = torch.from_dlpack(layer.__dlpack__())
+print(f"Tensor shape: {tensor.shape}")
+print(f"Tensor dtype: {tensor.dtype}")
+
+# Perform tensor operations
+mean = tensor.mean()
+std = tensor.std()
+max_val = tensor.max()
+min_val = tensor.min()
+
+print(f"Layer statistics: mean={mean:.4f}, std={std:.4f}")
+print(f"Value range: [{min_val:.4f}, {max_val:.4f}]")
+</code></pre>
+<h3 id="numpy-integration-1"><a class="header" href="#numpy-integration-1">NumPy Integration</a></h3>
+<pre><code class="language-python">import numpy as np
+
+# Convert layer to NumPy array
+array = np.from_dlpack(layer.__dlpack__())
+print(f"Array shape: {array.shape}")
+print(f"Array dtype: {array.dtype}")
+
+# Perform NumPy operations
+mean = np.mean(array)
+std = np.std(array)
+percentiles = np.percentile(array, [25, 50, 75])
+
+print(f"NumPy statistics: mean={mean:.4f}, std={std:.4f}")
+print(f"Percentiles: 25%={percentiles[0]:.4f}, 50%={percentiles[1]:.4f}, 75%={percentiles[2]:.4f}")
+</code></pre>
+<h3 id="cupy-integration-gpu-arrays-1"><a class="header" href="#cupy-integration-gpu-arrays-1">CuPy Integration (GPU Arrays)</a></h3>
+<pre><code class="language-python">import cupy as cp
+
+# Convert layer to CuPy array for GPU operations
+gpu_array = cp.from_dlpack(layer.__dlpack__())
+print(f"GPU array shape: {gpu_array.shape}")
+
+# Perform GPU operations
+norm = cp.linalg.norm(gpu_array)
+eigenvals = cp.linalg.eigvals(gpu_array)
+
+print(f"GPU norm: {norm:.4f}")
+print(f"Eigenvalues shape: {eigenvals.shape}")
+</code></pre>
+<h2 id="advanced-usage-1"><a class="header" href="#advanced-usage-1">Advanced Usage</a></h2>
+<h3 id="batch-processing-1"><a class="header" href="#batch-processing-1">Batch Processing</a></h3>
+<pre><code class="language-python">import torch
+import dynamo_llm
+
+def process_block_layers(block):
+    """Process all layers in a block."""
+    results = []
+    
+    for layer_idx in range(len(block)):
+        layer = block[layer_idx]
+        tensor = torch.from_dlpack(layer.__dlpack__())
+        
+        # Process layer data
+        result = torch.softmax(tensor, dim=-1)
+        results.append(result)
+    
+    return results
+
+# Process multiple blocks
+blocks = block_manager.allocate_blocks(4)
+all_results = []
+
+for block in blocks:
+    block_results = process_block_layers(block)
+    all_results.extend(block_results)
+
+print(f"Processed {len(all_results)} layers total")
+</code></pre>
+<h3 id="memory-efficient-processing"><a class="header" href="#memory-efficient-processing">Memory-Efficient Processing</a></h3>
+<pre><code class="language-python">def memory_efficient_layer_processing(block):
+    """Process layers with minimal memory usage."""
+    for layer_idx in range(len(block)):
+        layer = block[layer_idx]
+        
+        # Process layer in chunks to avoid memory issues
+        tensor = torch.from_dlpack(layer.__dlpack__())
+        
+        # Process in smaller chunks if needed
+        chunk_size = 1000
+        for i in range(0, tensor.shape[0], chunk_size):
+            chunk = tensor[i:i+chunk_size]
+            # Process chunk
+            result = torch.softmax(chunk, dim=-1)
+            # Use result...
+        
+        # Explicitly delete tensor to free memory
+        del tensor
+</code></pre>
+<h3 id="custom-layer-processing"><a class="header" href="#custom-layer-processing">Custom Layer Processing</a></h3>
+<pre><code class="language-python">class LayerProcessor:
+    def __init__(self, model_config):
+        self.model_config = model_config
+    
+    def process_layer(self, layer, layer_idx):
+        """Process a single layer with custom logic."""
+        tensor = torch.from_dlpack(layer.__dlpack__())
+        
+        # Apply layer-specific processing
+        if layer_idx &lt; self.model_config.num_layers // 2:
+            # Early layers: apply attention
+            result = self.apply_attention(tensor)
+        else:
+            # Later layers: apply feedforward
+            result = self.apply_feedforward(tensor)
+        
+        return result
+    
+    def apply_attention(self, tensor):
+        # Custom attention logic
+        return torch.softmax(tensor, dim=-1)
+    
+    def apply_feedforward(self, tensor):
+        # Custom feedforward logic
+        return torch.relu(tensor)
+
+# Use custom processor
+processor = LayerProcessor(model_config)
+blocks = block_manager.allocate_blocks(2)
+
+for block in blocks:
+    for layer_idx in range(len(block)):
+        layer = block[layer_idx]
+        result = processor.process_layer(layer, layer_idx)
+        # Use result...
+</code></pre>
+<h2 id="error-handling-5"><a class="header" href="#error-handling-5">Error Handling</a></h2>
+<h3 id="block-access-errors"><a class="header" href="#block-access-errors">Block Access Errors</a></h3>
+<pre><code class="language-python">try:
+    # Try to access non-existent layer
+    layer = block[100]  # Index out of range
+except IndexError as e:
+    print(f"Layer access error: {e}")
+
+try:
+    # Try to access invalid block
+    invalid_block = None
+    layer = invalid_block[0]
+except AttributeError as e:
+    print(f"Block access error: {e}")
+</code></pre>
+<h3 id="dlpack-errors"><a class="header" href="#dlpack-errors">DLPack Errors</a></h3>
+<pre><code class="language-python">try:
+    # Try to convert layer to tensor
+    tensor = torch.from_dlpack(layer.__dlpack__())
+except Exception as e:
+    print(f"DLPack conversion error: {e}")
+    # Fallback to other methods
+</code></pre>
+<h3 id="memory-errors"><a class="header" href="#memory-errors">Memory Errors</a></h3>
+<pre><code class="language-python">try:
+    # Try to process large layer
+    tensor = torch.from_dlpack(layer.__dlpack__())
+    result = torch.softmax(tensor, dim=-1)
+except RuntimeError as e:
+    if "out of memory" in str(e):
+        print("GPU memory exhausted, processing in chunks")
+        # Implement chunked processing
+    else:
+        raise
+</code></pre>
+<h2 id="performance-considerations-3"><a class="header" href="#performance-considerations-3">Performance Considerations</a></h2>
+<h3 id="efficient-iteration"><a class="header" href="#efficient-iteration">Efficient Iteration</a></h3>
+<pre><code class="language-python"># Efficient iteration over layers
+for layer in block:
+    # Process layer
+    tensor = torch.from_dlpack(layer.__dlpack__())
+    # ... processing ...
+
+# Less efficient: accessing by index
+for i in range(len(block)):
+    layer = block[i]  # Additional overhead
+    tensor = torch.from_dlpack(layer.__dlpack__())
+    # ... processing ...
+</code></pre>
+<h3 id="memory-management-1"><a class="header" href="#memory-management-1">Memory Management</a></h3>
+<pre><code class="language-python">def process_layers_with_cleanup(block):
+    """Process layers with explicit memory cleanup."""
+    results = []
+    
+    for layer in block:
+        # Convert to tensor
+        tensor = torch.from_dlpack(layer.__dlpack__())
+        
+        # Process tensor
+        result = torch.softmax(tensor, dim=-1)
+        results.append(result)
+        
+        # Explicitly delete tensor to free memory
+        del tensor
+    
+    return results
+</code></pre>
+<h3 id="batch-processing-2"><a class="header" href="#batch-processing-2">Batch Processing</a></h3>
+<pre><code class="language-python">def batch_process_layers(blocks, batch_size=4):
+    """Process multiple layers in batches."""
+    all_layers = []
+    
+    # Collect all layers
+    for block in blocks:
+        for layer in block:
+            all_layers.append(layer)
+    
+    # Process in batches
+    results = []
+    for i in range(0, len(all_layers), batch_size):
+        batch = all_layers[i:i+batch_size]
+        
+        # Convert batch to tensors
+        tensors = [torch.from_dlpack(layer.__dlpack__()) for layer in batch]
+        
+        # Process batch
+        batch_results = torch.stack(tensors)
+        processed = torch.softmax(batch_results, dim=-1)
+        
+        results.extend(processed)
+    
+    return results
+</code></pre>
+<h2 id="type-hints"><a class="header" href="#type-hints">Type Hints</a></h2>
+<p>The Python API includes comprehensive type hints for better IDE support:</p>
+<pre><code class="language-python">from typing import List, Optional, Tuple
+import dynamo_llm
+
+def process_block(block: dynamo_llm.Block) -&gt; List[torch.Tensor]:
+    """Process a block and return list of processed tensors."""
+    results: List[torch.Tensor] = []
+    
+    for layer in block:
+        tensor = torch.from_dlpack(layer.__dlpack__())
+        result = torch.softmax(tensor, dim=-1)
+        results.append(result)
+    
+    return results
+
+def get_layer_info(layer: dynamo_llm.Layer) -&gt; Tuple[Tuple[int, ...], dynamo_llm.DType]:
+    """Get layer shape and data type."""
+    return layer.shape, layer.dtype
+</code></pre>
+<h2 id="next-steps-7"><a class="header" href="#next-steps-7">Next Steps</a></h2>
+<ul>
+<li><a href="python/dlpack.html">DLPack Integration</a> - Learn about tensor interoperability</li>
+<li><a href="python/vllm.html">vLLM Integration</a> - Production deployment with vLLM</li>
+<li><a href="python/block_list.html">Block Lists</a> - Manage collections of blocks</li>
+<li><a href="python/examples/basic_usage.html">Examples</a> - Practical usage examples</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="layer-interface"><a class="header" href="#layer-interface">Layer Interface</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="dlpack-integration-2"><a class="header" href="#dlpack-integration-2">DLPack Integration</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vllm-integration-1"><a class="header" href="#vllm-integration-1">vLLM Integration</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="block-lists"><a class="header" href="#block-lists">Block Lists</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="performance-optimization"><a class="header" href="#performance-optimization">Performance Optimization</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="memory-management-2"><a class="header" href="#memory-management-2">Memory Management</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="error-handling-6"><a class="header" href="#error-handling-6">Error Handling</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="best-practices-1"><a class="header" href="#best-practices-1">Best Practices</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rust-api-reference"><a class="header" href="#rust-api-reference">Rust API Reference</a></h1>
+<p>This document provides a comprehensive reference for the Rust API of the KV Block Manager.</p>
+<h2 id="core-types"><a class="header" href="#core-types">Core Types</a></h2>
+<h3 id="kvblockmanager"><a class="header" href="#kvblockmanager">KvBlockManager</a></h3>
+<p>The main entry point for block management operations.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct KvBlockManager&lt;Metadata: BlockMetadata&gt; {
+    state: Arc&lt;state::KvBlockManagerState&lt;locality::Local, Metadata&gt;&gt;,
+    _cancellation_token: Arc&lt;CancelOnLastDrop&gt;,
+    block_size: usize,
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="methods"><a class="header" href="#methods">Methods</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;Metadata: BlockMetadata&gt; KvBlockManager&lt;Metadata&gt; {
+    /// Create a new KvBlockManager
+    pub async fn new(config: KvBlockManagerConfig) -&gt; Result&lt;Self&gt;
+    
+    /// Get the block size in tokens
+    pub fn block_size(&amp;self) -&gt; usize
+    
+    /// Get the worker ID
+    pub fn worker_id(&amp;self) -&gt; WorkerID
+    
+    /// Export local blockset configuration
+    pub fn export_local_blockset(&amp;self) -&gt; Result&lt;SerializedNixlBlockSet&gt;
+    
+    /// Import remote blockset configuration
+    pub fn import_remote_blockset(&amp;self, serialized_blockset: SerializedNixlBlockSet) -&gt; Result&lt;()&gt;
+    
+    /// Get immutable remote blocks
+    pub fn get_remote_blocks_immutable(&amp;self, bds: &amp;BlockDescriptorList) -&gt; Result&lt;Vec&lt;RemoteBlock&lt;IsImmutable&gt;&gt;&gt;
+    
+    /// Get mutable remote blocks
+    pub fn get_remote_blocks_mutable(&amp;self, bds: &amp;BlockDescriptorList) -&gt; Result&lt;Vec&lt;RemoteBlock&lt;IsMutable&gt;&gt;&gt;
+    
+    /// Get device block pool
+    pub fn device(&amp;self) -&gt; Option&lt;&amp;BlockPool&lt;DeviceStorage, locality::Local, Metadata&gt;&gt;
+    
+    /// Get host block pool
+    pub fn host(&amp;self) -&gt; Option&lt;&amp;BlockPool&lt;PinnedStorage, locality::Local, Metadata&gt;&gt;
+    
+    /// Get disk block pool
+    pub fn disk(&amp;self) -&gt; Option&lt;&amp;BlockPool&lt;DiskStorage, locality::Local, Metadata&gt;&gt;
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="blockpool"><a class="header" href="#blockpool">BlockPool</a></h3>
+<p>Manages the lifecycle of blocks in a specific storage backend.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct BlockPool&lt;S: Storage, L: LocalityProvider, M: BlockMetadata&gt; {
+    priority_tx: tokio::sync::mpsc::UnboundedSender&lt;PriorityRequest&lt;S, L, M&gt;&gt;,
+    ctrl_tx: tokio::sync::mpsc::UnboundedSender&lt;ControlRequest&lt;S, L, M&gt;&gt;,
+    available_blocks_counter: Arc&lt;AtomicU64&gt;,
+    total_blocks_counter: Arc&lt;AtomicU64&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="methods-1"><a class="header" href="#methods-1">Methods</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;S: Storage, L: LocalityProvider, M: BlockMetadata&gt; BlockPool&lt;S, L, M&gt; {
+    /// Create a new BlockPool
+    pub fn new(args: BlockPoolArgs&lt;S, L, M&gt;) -&gt; Result&lt;Self&gt;
+    
+    /// Get total number of blocks
+    pub fn total_blocks(&amp;self) -&gt; u64
+    
+    /// Get number of available blocks
+    pub fn available_blocks(&amp;self) -&gt; u64
+    
+    /// Allocate blocks (async)
+    pub async fn allocate_blocks(&amp;self, count: usize) -&gt; Result&lt;Vec&lt;MutableBlock&lt;S, L, M&gt;&gt;, BlockPoolError&gt;
+    
+    /// Allocate blocks (blocking)
+    pub fn allocate_blocks_blocking(&amp;self, count: usize) -&gt; Result&lt;Vec&lt;MutableBlock&lt;S, L, M&gt;&gt;, BlockPoolError&gt;
+    
+    /// Register blocks (async)
+    pub async fn register_blocks(&amp;self, blocks: Vec&lt;MutableBlock&lt;S, L, M&gt;&gt;) -&gt; Result&lt;Vec&lt;ImmutableBlock&lt;S, L, M&gt;&gt;, BlockPoolError&gt;
+    
+    /// Register blocks (blocking)
+    pub fn register_blocks_blocking(&amp;self, blocks: Vec&lt;MutableBlock&lt;S, L, M&gt;&gt;) -&gt; Result&lt;Vec&lt;ImmutableBlock&lt;S, L, M&gt;&gt;, BlockPoolError&gt;
+    
+    /// Match sequence hashes (async)
+    pub async fn match_sequence_hashes(&amp;self, sequence_hashes: &amp;[SequenceHash]) -&gt; Result&lt;Vec&lt;ImmutableBlock&lt;S, L, M&gt;&gt;, BlockPoolError&gt;
+    
+    /// Match sequence hashes (blocking)
+    pub fn match_sequence_hashes_blocking(&amp;self, sequence_hashes: &amp;[SequenceHash]) -&gt; Result&lt;Vec&lt;ImmutableBlock&lt;S, L, M&gt;&gt;, BlockPoolError&gt;
+    
+    /// Add blocks to pool
+    pub async fn add_blocks(&amp;self, blocks: Vec&lt;Block&lt;S, L, M&gt;&gt;) -&gt; Result&lt;(), BlockPoolError&gt;
+    
+    /// Add blocks to pool (blocking)
+    pub fn add_blocks_blocking(&amp;self, blocks: Vec&lt;Block&lt;S, L, M&gt;&gt;) -&gt; Result&lt;(), BlockPoolError&gt;
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="mutableblock"><a class="header" href="#mutableblock">MutableBlock</a></h3>
+<p>Represents a uniquely owned block that can be modified.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct MutableBlock&lt;S: Storage, L: LocalityProvider, M: BlockMetadata&gt; {
+    block: Block&lt;S, L, M&gt;,
+    state: BlockState,
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="methods-2"><a class="header" href="#methods-2">Methods</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;S: Storage, L: LocalityProvider, M: BlockMetadata&gt; MutableBlock&lt;S, L, M&gt; {
+    /// Get block ID
+    pub fn block_id(&amp;self) -&gt; BlockId
+    
+    /// Get number of layers
+    pub fn num_layers(&amp;self) -&gt; usize
+    
+    /// Get page size
+    pub fn page_size(&amp;self) -&gt; usize
+    
+    /// Get inner dimension
+    pub fn inner_dim(&amp;self) -&gt; usize
+    
+    /// Get number of outer dimensions
+    pub fn num_outer_dims(&amp;self) -&gt; usize
+    
+    /// Get layer view
+    pub fn layer_view(&amp;self, layer_idx: usize, outer_idx: usize) -&gt; BlockResult&lt;view::LayerView&lt;S&gt;&gt;
+    
+    /// Get mutable layer view
+    pub fn layer_view_mut(&amp;mut self, layer_idx: usize, outer_idx: usize) -&gt; BlockResult&lt;view::LayerViewMut&lt;S&gt;&gt;
+    
+    /// Get block view
+    pub fn block_view(&amp;self) -&gt; BlockResult&lt;view::BlockView&lt;S&gt;&gt;
+    
+    /// Get mutable block view
+    pub fn block_view_mut(&amp;mut self) -&gt; BlockResult&lt;view::BlockViewMut&lt;S&gt;&gt;
+    
+    /// Get sequence hash
+    pub fn sequence_hash(&amp;self) -&gt; SequenceHash
+    
+    /// Check if block is complete
+    pub fn is_complete(&amp;self) -&gt; bool
+    
+    /// Mark block as complete
+    pub fn mark_complete(&amp;mut self)
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="immutableblock"><a class="header" href="#immutableblock">ImmutableBlock</a></h3>
+<p>Represents a shared, immutable reference to a block.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct ImmutableBlock&lt;S: Storage, L: LocalityProvider, M: BlockMetadata&gt; {
+    block: Arc&lt;Block&lt;S, L, M&gt;&gt;,
+    state: BlockState,
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="methods-3"><a class="header" href="#methods-3">Methods</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;S: Storage, L: LocalityProvider, M: BlockMetadata&gt; ImmutableBlock&lt;S, L, M&gt; {
+    /// Get block ID
+    pub fn block_id(&amp;self) -&gt; BlockId
+    
+    /// Get number of layers
+    pub fn num_layers(&amp;self) -&gt; usize
+    
+    /// Get page size
+    pub fn page_size(&amp;self) -&gt; usize
+    
+    /// Get inner dimension
+    pub fn inner_dim(&amp;self) -&gt; usize
+    
+    /// Get number of outer dimensions
+    pub fn num_outer_dims(&amp;self) -&gt; usize
+    
+    /// Get layer view
+    pub fn layer_view(&amp;self, layer_idx: usize, outer_idx: usize) -&gt; BlockResult&lt;view::LayerView&lt;S&gt;&gt;
+    
+    /// Get block view
+    pub fn block_view(&amp;self) -&gt; BlockResult&lt;view::BlockView&lt;S&gt;&gt;
+    
+    /// Get sequence hash
+    pub fn sequence_hash(&amp;self) -&gt; SequenceHash
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="configuration-types"><a class="header" href="#configuration-types">Configuration Types</a></h2>
+<h3 id="kvblockmanagerconfig"><a class="header" href="#kvblockmanagerconfig">KvBlockManagerConfig</a></h3>
+<p>Main configuration for the block manager.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct KvBlockManagerConfig {
+    pub runtime: KvManagerRuntimeConfig,
+    pub model: KvManagerModelConfig,
+    pub device_layout: Option&lt;KvManagerLayoutConfig&lt;DeviceStorage&gt;&gt;,
+    pub host_layout: Option&lt;KvManagerLayoutConfig&lt;PinnedStorage&gt;&gt;,
+    pub disk_layout: Option&lt;KvManagerLayoutConfig&lt;DiskStorage&gt;&gt;,
+    pub event_manager: Option&lt;Arc&lt;dyn EventManager&gt;&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="kvmanagerruntimeconfig"><a class="header" href="#kvmanagerruntimeconfig">KvManagerRuntimeConfig</a></h3>
+<p>Runtime configuration for the block manager.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct KvManagerRuntimeConfig {
+    pub worker_id: u64,
+    pub cancellation_token: CancellationToken,
+    pub nixl: NixlOptions,
+    pub async_runtime: Option&lt;Arc&lt;tokio::runtime::Runtime&gt;&gt;,
+    pub metrics_registry: Arc&lt;Registry&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="kvmanagermodelconfig"><a class="header" href="#kvmanagermodelconfig">KvManagerModelConfig</a></h3>
+<p>Model-specific configuration.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct KvManagerModelConfig {
+    pub num_layers: usize,
+    pub outer_dim: usize,
+    pub page_size: usize,
+    pub inner_dim: usize,
+    pub dtype: DType,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="kvmanagerlayoutconfig"><a class="header" href="#kvmanagerlayoutconfig">KvManagerLayoutConfig</a></h3>
+<p>Layout configuration for a storage type.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct KvManagerLayoutConfig&lt;S: Storage + NixlRegisterableStorage&gt; {
+    pub num_blocks: usize,
+    pub layout_type: LayoutType,
+    pub storage: Option&lt;Vec&lt;S&gt;&gt;,
+    pub allocator: Option&lt;Arc&lt;dyn StorageAllocator&lt;S&gt;&gt;&gt;,
+    pub logical: Option&lt;BlockParallelismStrategy&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="storage-types-1"><a class="header" href="#storage-types-1">Storage Types</a></h2>
+<h3 id="storage-trait"><a class="header" href="#storage-trait">Storage Trait</a></h3>
+<p>Core trait for storage backends.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait Storage: Debug + Send + Sync + 'static {
+    fn storage_type(&amp;self) -&gt; StorageType;
+    fn addr(&amp;self) -&gt; u64;
+    fn size(&amp;self) -&gt; usize;
+    unsafe fn as_ptr(&amp;self) -&gt; *const u8;
+    unsafe fn as_mut_ptr(&amp;mut self) -&gt; *mut u8;
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="storagetype"><a class="header" href="#storagetype">StorageType</a></h3>
+<p>Enumeration of supported storage types.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum StorageType {
+    System,
+    Device(u32),
+    Pinned,
+    Disk(u64),
+    Nixl,
+    Null,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="storage-allocators-1"><a class="header" href="#storage-allocators-1">Storage Allocators</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// System memory allocator
+pub struct SystemAllocator;
+
+// Device memory allocator
+pub struct DeviceAllocator;
+
+// Pinned memory allocator
+pub struct PinnedAllocator;
+
+// Disk storage allocator
+pub struct DiskAllocator;
+
+// NIXL storage allocator
+pub struct NixlAllocator;
+<span class="boring">}</span></code></pre></pre>
+<h2 id="error-types"><a class="header" href="#error-types">Error Types</a></h2>
+<h3 id="blockpoolerror"><a class="header" href="#blockpoolerror">BlockPoolError</a></h3>
+<p>Errors that can occur during block pool operations.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum BlockPoolError {
+    BlockNotComplete,
+    NotEnoughBlocksAvailable(usize, usize),
+    InvalidMutableBlock(String),
+    FailedToRegisterBlock(String),
+    ProgressEngineShutdown,
+    BlockError(BlockError),
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="blockerror"><a class="header" href="#blockerror">BlockError</a></h3>
+<p>Errors that can occur during block operations.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum BlockError {
+    ViewsNotAvailableOnLogicalBlocks,
+    InvalidLayerIndex(usize),
+    InvalidOuterIndex(usize),
+    StorageError(StorageError),
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="storageerror"><a class="header" href="#storageerror">StorageError</a></h3>
+<p>Errors that can occur during storage operations.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum StorageError {
+    AllocationFailed(String),
+    NotAccessible(String),
+    InvalidConfig(String),
+    OperationFailed(String),
+    Cuda(DriverError),
+    RegistrationKeyExists(String),
+    HandleNotFound(String),
+    NixlError(NixlError),
+    OutOfBounds(String),
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="view-types"><a class="header" href="#view-types">View Types</a></h2>
+<h3 id="layerview"><a class="header" href="#layerview">LayerView</a></h3>
+<p>Read-only view of a layer's data.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct LayerView&lt;S: Storage&gt; {
+    storage: S,
+    offset: usize,
+    size: usize,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="layerviewmut"><a class="header" href="#layerviewmut">LayerViewMut</a></h3>
+<p>Mutable view of a layer's data.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct LayerViewMut&lt;S: Storage&gt; {
+    storage: S,
+    offset: usize,
+    size: usize,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="blockview"><a class="header" href="#blockview">BlockView</a></h3>
+<p>Read-only view of an entire block's data.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct BlockView&lt;S: Storage&gt; {
+    storage: S,
+    offset: usize,
+    size: usize,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="blockviewmut"><a class="header" href="#blockviewmut">BlockViewMut</a></h3>
+<p>Mutable view of an entire block's data.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct BlockViewMut&lt;S: Storage&gt; {
+    storage: S,
+    offset: usize,
+    size: usize,
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="event-system"><a class="header" href="#event-system">Event System</a></h2>
+<h3 id="eventmanager-trait"><a class="header" href="#eventmanager-trait">EventManager Trait</a></h3>
+<p>Trait for handling block-related events.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait EventManager: Send + Sync + 'static {
+    fn block_allocated(&amp;self, block_id: BlockId);
+    fn block_registered(&amp;self, block_id: BlockId, sequence_hash: SequenceHash);
+    fn block_matched(&amp;self, block_id: BlockId, sequence_hash: SequenceHash);
+    fn block_evicted(&amp;self, block_id: BlockId);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="nulleventmanager"><a class="header" href="#nulleventmanager">NullEventManager</a></h3>
+<p>Default event manager that does nothing.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct NullEventManager;
+
+impl EventManager for NullEventManager {
+    fn block_allocated(&amp;self, _block_id: BlockId) {}
+    fn block_registered(&amp;self, _block_id: BlockId, _sequence_hash: SequenceHash) {}
+    fn block_matched(&amp;self, _block_id: BlockId, _sequence_hash: SequenceHash) {}
+    fn block_evicted(&amp;self, _block_id: BlockId) {}
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="metrics"><a class="header" href="#metrics">Metrics</a></h2>
+<h3 id="blockmanagermetrics"><a class="header" href="#blockmanagermetrics">BlockManagerMetrics</a></h3>
+<p>Metrics collection for the block manager.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct BlockManagerMetrics {
+    pool_metrics: Arc&lt;PoolMetrics&gt;,
+    allocation_counter: Counter,
+    registration_counter: Counter,
+    match_counter: Counter,
+    eviction_counter: Counter,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="poolmetrics"><a class="header" href="#poolmetrics">PoolMetrics</a></h3>
+<p>Metrics for a specific block pool.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct PoolMetrics {
+    total_blocks: Gauge,
+    available_blocks: Gauge,
+    allocation_duration: Histogram,
+    registration_duration: Histogram,
+    match_duration: Histogram,
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="utility-types"><a class="header" href="#utility-types">Utility Types</a></h2>
+<h3 id="sequencehash"><a class="header" href="#sequencehash">SequenceHash</a></h3>
+<p>Hash representing a sequence of tokens.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct SequenceHash([u8; 8]);
+
+impl SequenceHash {
+    pub fn new(hash: [u8; 8]) -&gt; Self;
+    pub fn as_bytes(&amp;self) -&gt; &amp;[u8; 8];
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="blockid"><a class="header" href="#blockid">BlockId</a></h3>
+<p>Unique identifier for a block.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub type BlockId = usize;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="workerid"><a class="header" href="#workerid">WorkerID</a></h3>
+<p>Unique identifier for a worker.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub type WorkerID = u64;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="dtype"><a class="header" href="#dtype">DType</a></h3>
+<p>Data type enumeration.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum DType {
+    FP16,
+    FP32,
+    BF16,
+    INT8,
+    INT16,
+    INT32,
+    INT64,
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="constants"><a class="header" href="#constants">Constants</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Default values
+pub const DEFAULT_PAGE_SIZE: usize = 16;
+pub const DEFAULT_INNER_DIM: usize = 4096;
+pub const DEFAULT_NUM_LAYERS: usize = 32;
+pub const DEFAULT_OUTER_DIM: usize = 2;
+
+// Limits
+pub const MAX_PAGE_SIZE: usize = 1024;
+pub const MAX_INNER_DIM: usize = 32768;
+pub const MAX_NUM_LAYERS: usize = 128;
+pub const MAX_OUTER_DIM: usize = 2;
+<span class="boring">}</span></code></pre></pre>
+<h2 id="type-aliases"><a class="header" href="#type-aliases">Type Aliases</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Common type aliases
+pub type ReferenceBlockManager = KvBlockManager&lt;BasicMetadata&gt;;
+pub type MutableBlocks&lt;S, L, M&gt; = Vec&lt;MutableBlock&lt;S, L, M&gt;&gt;;
+pub type ImmutableBlocks&lt;S, L, M&gt; = Vec&lt;ImmutableBlock&lt;S, L, M&gt;&gt;;
+pub type BlockPoolResult&lt;T&gt; = Result&lt;T, BlockPoolError&gt;;
+pub type StorageResult&lt;T&gt; = Result&lt;T, StorageError&gt;;
+<span class="boring">}</span></code></pre></pre>
+<h2 id="builder-patterns"><a class="header" href="#builder-patterns">Builder Patterns</a></h2>
+<h3 id="kvblockmanagerconfigbuilder"><a class="header" href="#kvblockmanagerconfigbuilder">KvBlockManagerConfigBuilder</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl KvBlockManagerConfigBuilder {
+    pub fn runtime(mut self, runtime: KvManagerRuntimeConfig) -&gt; Self;
+    pub fn model(mut self, model: KvManagerModelConfig) -&gt; Self;
+    pub fn device_layout(mut self, layout: KvManagerLayoutConfig&lt;DeviceStorage&gt;) -&gt; Self;
+    pub fn host_layout(mut self, layout: KvManagerLayoutConfig&lt;PinnedStorage&gt;) -&gt; Self;
+    pub fn disk_layout(mut self, layout: KvManagerLayoutConfig&lt;DiskStorage&gt;) -&gt; Self;
+    pub fn event_manager(mut self, manager: Arc&lt;dyn EventManager&gt;) -&gt; Self;
+    pub fn build(self) -&gt; Result&lt;KvBlockManagerConfig, String&gt;;
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="kvmanagerruntimeconfigbuilder"><a class="header" href="#kvmanagerruntimeconfigbuilder">KvManagerRuntimeConfigBuilder</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl KvManagerRuntimeConfigBuilder {
+    pub fn worker_id(mut self, id: u64) -&gt; Self;
+    pub fn enable_nixl(mut self) -&gt; Self;
+    pub fn use_nixl_agent(mut self, agent: NixlAgent) -&gt; Self;
+    pub fn disable_nixl(mut self) -&gt; Self;
+    pub fn async_runtime(mut self, runtime: Arc&lt;tokio::runtime::Runtime&gt;) -&gt; Self;
+    pub fn metrics_registry(mut self, registry: Arc&lt;Registry&gt;) -&gt; Self;
+    pub fn build(self) -&gt; KvManagerRuntimeConfig;
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="kvmanagermodelconfigbuilder"><a class="header" href="#kvmanagermodelconfigbuilder">KvManagerModelConfigBuilder</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl KvManagerModelConfigBuilder {
+    pub fn num_layers(mut self, layers: usize) -&gt; Self;
+    pub fn outer_dim(mut self, dim: usize) -&gt; Self;
+    pub fn page_size(mut self, size: usize) -&gt; Self;
+    pub fn inner_dim(mut self, dim: usize) -&gt; Self;
+    pub fn dtype(mut self, dtype: DType) -&gt; Self;
+    pub fn build(self) -&gt; KvManagerModelConfig;
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="next-steps-8"><a class="header" href="#next-steps-8">Next Steps</a></h2>
+<ul>
+<li><a href="api/python.html">Python API Reference</a> - Python bindings reference</li>
+<li><a href="api/config.html">Configuration Reference</a> - Configuration options</li>
+<li><a href="api/examples/basic_usage.html">Examples</a> - Usage examples</li>
+<li><a href="api/advanced/best_practices.html">Best Practices</a> - Best practices guide</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="python-api-reference"><a class="header" href="#python-api-reference">Python API Reference</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="configuration-reference"><a class="header" href="#configuration-reference">Configuration Reference</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="basic-usage-examples"><a class="header" href="#basic-usage-examples">Basic Usage Examples</a></h1>
+<p>This section provides practical examples of how to use the KV Block Manager for common scenarios. These examples demonstrate the core functionality and best practices.</p>
+<h2 id="rust-examples"><a class="header" href="#rust-examples">Rust Examples</a></h2>
+<h3 id="example-1-basic-block-manager-setup"><a class="header" href="#example-1-basic-block-manager-setup">Example 1: Basic Block Manager Setup</a></h3>
+<pre><pre class="playground"><code class="language-rust">use dynamo_llm::block_manager::{
+    KvBlockManager, KvBlockManagerConfig, KvManagerModelConfig, KvManagerRuntimeConfig
+};
+use dynamo_llm::common::dtype::DType;
+
+#[tokio::main]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    // Create runtime configuration
+    let runtime_config = KvManagerRuntimeConfig::builder()
+        .worker_id(0)
+        .build();
+
+    // Create model configuration
+    let model_config = KvManagerModelConfig::builder()
+        .num_layers(32)
+        .outer_dim(2)      // Key and Value
+        .page_size(16)     // Tokens per block
+        .inner_dim(4096)   // Hidden dimension
+        .dtype(DType::FP16)
+        .build();
+
+    // Create block manager configuration
+    let config = KvBlockManagerConfig::builder()
+        .runtime(runtime_config)
+        .model(model_config)
+        .build()?;
+
+    // Create block manager
+    let block_manager = KvBlockManager::new(config).await?;
+
+    println!("Block manager created successfully!");
+    println!("Block size: {} tokens", block_manager.block_size());
+
+    Ok(())
+}</code></pre></pre>
+<h3 id="example-2-allocating-and-using-blocks"><a class="header" href="#example-2-allocating-and-using-blocks">Example 2: Allocating and Using Blocks</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::{KvBlockManager, BlockPoolError};
+
+async fn allocate_and_use_blocks(block_manager: &amp;KvBlockManager&lt;BasicMetadata&gt;) -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    // Get device pool
+    let device_pool = block_manager.device()
+        .ok_or("Device pool not configured")?;
+
+    println!("Total device blocks: {}", device_pool.total_blocks());
+    println!("Available device blocks: {}", device_pool.available_blocks());
+
+    // Allocate blocks
+    let mut_blocks = device_pool.allocate_blocks_blocking(4)?;
+    println!("Allocated {} blocks", mut_blocks.len());
+
+    // Process each block
+    for (i, block) in mut_blocks.iter().enumerate() {
+        println!("Processing block {}", i);
+        
+        // Get block information
+        let num_layers = block.num_layers();
+        let page_size = block.page_size();
+        let inner_dim = block.inner_dim();
+        
+        println!("  Layers: {}, Page size: {}, Inner dim: {}", 
+                num_layers, page_size, inner_dim);
+
+        // Access block data for each layer
+        for layer_idx in 0..num_layers {
+            let layer_view = block.layer_view(layer_idx, 0)?;
+            println!("  Layer {} data size: {} bytes", layer_idx, layer_view.len());
+            
+            // Here you would typically fill the layer with KV cache data
+            // fill_layer_with_kv_data(layer_view, kv_data);
+        }
+    }
+
+    // Register blocks for reuse
+    let immutable_blocks = device_pool.register_blocks_blocking(mut_blocks)?;
+    println!("Registered {} blocks", immutable_blocks.len());
+
+    // Get sequence hashes for future matching
+    let sequence_hashes: Vec&lt;SequenceHash&gt; = immutable_blocks
+        .iter()
+        .map(|block| block.sequence_hash())
+        .collect();
+
+    println!("Sequence hashes: {:?}", sequence_hashes);
+
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="example-3-block-matching-and-reuse"><a class="header" href="#example-3-block-matching-and-reuse">Example 3: Block Matching and Reuse</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::tokens::SequenceHash;
+
+async fn demonstrate_block_reuse(block_manager: &amp;KvBlockManager&lt;BasicMetadata&gt;) -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let device_pool = block_manager.device()
+        .ok_or("Device pool not configured")?;
+
+    // Simulate sequence hashes from a previous computation
+    let sequence_hashes = vec![
+        SequenceHash::new([1, 2, 3, 4, 5, 6, 7, 8]),
+        SequenceHash::new([9, 10, 11, 12, 13, 14, 15, 16]),
+    ];
+
+    // Try to match existing blocks
+    match device_pool.match_sequence_hashes_blocking(&amp;sequence_hashes) {
+        Ok(matched_blocks) =&gt; {
+            if matched_blocks.len() == sequence_hashes.len() {
+                println!("All blocks found in cache! Cache hit rate: 100%");
+                
+                // Use the matched blocks directly
+                for (i, block) in matched_blocks.iter().enumerate() {
+                    println!("Using cached block {} with hash {:?}", i, block.sequence_hash());
+                }
+            } else {
+                println!("Partial cache hit: {}/{} blocks found", 
+                        matched_blocks.len(), sequence_hashes.len());
+                
+                // Allocate new blocks for missing sequences
+                let missing_count = sequence_hashes.len() - matched_blocks.len();
+                let new_blocks = device_pool.allocate_blocks_blocking(missing_count)?;
+                println!("Allocated {} new blocks for missing sequences", new_blocks.len());
+            }
+        }
+        Err(BlockPoolError::NotEnoughBlocksAvailable(requested, available)) =&gt; {
+            println!("Not enough blocks available. Requested: {}, Available: {}", 
+                    requested, available);
+        }
+        Err(e) =&gt; {
+            println!("Error matching blocks: {}", e);
+        }
+    }
+
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="example-4-multi-tier-storage"><a class="header" href="#example-4-multi-tier-storage">Example 4: Multi-tier Storage</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::{
+    KvManagerLayoutConfig, LayoutType
+};
+use dynamo_llm::block_manager::storage::{
+    DeviceAllocator, PinnedAllocator, DiskAllocator
+};
+
+async fn setup_multi_tier_storage() -&gt; Result&lt;KvBlockManager&lt;BasicMetadata&gt;, Box&lt;dyn std::error::Error&gt;&gt; {
+    // Runtime and model configuration
+    let runtime_config = KvManagerRuntimeConfig::builder()
+        .worker_id(0)
+        .build();
+
+    let model_config = KvManagerModelConfig::builder()
+        .num_layers(32)
+        .outer_dim(2)
+        .page_size(16)
+        .inner_dim(4096)
+        .dtype(DType::FP16)
+        .build();
+
+    // Device layout (GPU memory) - Fast access, limited capacity
+    let device_layout = KvManagerLayoutConfig::builder()
+        .num_blocks(1000)
+        .layout_type(LayoutType::FullyContiguous)
+        .allocator(DeviceAllocator::default())
+        .build();
+
+    // Host layout (CPU memory) - Medium speed, larger capacity
+    let host_layout = KvManagerLayoutConfig::builder()
+        .num_blocks(5000)
+        .layout_type(LayoutType::Paged)
+        .allocator(PinnedAllocator::default())
+        .build();
+
+    // Disk layout (NVMe storage) - Slow access, very large capacity
+    let disk_layout = KvManagerLayoutConfig::builder()
+        .num_blocks(50000)
+        .layout_type(LayoutType::Paged)
+        .allocator(DiskAllocator::new("/mnt/nvme/kv_cache"))
+        .build();
+
+    // Create block manager with multi-tier storage
+    let config = KvBlockManagerConfig::builder()
+        .runtime(runtime_config)
+        .model(model_config)
+        .device_layout(device_layout)
+        .host_layout(host_layout)
+        .disk_layout(disk_layout)
+        .build()?;
+
+    let block_manager = KvBlockManager::new(config).await?;
+
+    // Print storage information
+    if let Some(device_pool) = block_manager.device() {
+        println!("Device storage: {} blocks", device_pool.total_blocks());
+    }
+    
+    if let Some(host_pool) = block_manager.host() {
+        println!("Host storage: {} blocks", host_pool.total_blocks());
+    }
+    
+    if let Some(disk_pool) = block_manager.disk() {
+        println!("Disk storage: {} blocks", disk_pool.total_blocks());
+    }
+
+    Ok(block_manager)
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="example-5-error-handling-and-recovery"><a class="header" href="#example-5-error-handling-and-recovery">Example 5: Error Handling and Recovery</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::{BlockPoolError, BlockError};
+
+async fn robust_block_allocation(block_manager: &amp;KvBlockManager&lt;BasicMetadata&gt;) -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let device_pool = block_manager.device()
+        .ok_or("Device pool not configured")?;
+
+    // Try to allocate blocks with fallback strategies
+    let mut allocated_blocks = Vec::new();
+    let requested_blocks = 10;
+
+    // Strategy 1: Try device memory first
+    match device_pool.allocate_blocks_blocking(requested_blocks) {
+        Ok(blocks) =&gt; {
+            println!("Successfully allocated {} blocks from device memory", blocks.len());
+            allocated_blocks = blocks;
+        }
+        Err(BlockPoolError::NotEnoughBlocksAvailable(requested, available)) =&gt; {
+            println!("Device memory insufficient. Requested: {}, Available: {}", requested, available);
+            
+            // Strategy 2: Try to allocate what's available
+            match device_pool.allocate_blocks_blocking(available) {
+                Ok(blocks) =&gt; {
+                    println!("Allocated {} blocks from device memory", blocks.len());
+                    allocated_blocks = blocks;
+                }
+                Err(e) =&gt; {
+                    println!("Failed to allocate from device memory: {}", e);
+                }
+            }
+        }
+        Err(e) =&gt; {
+            println!("Device allocation failed: {}", e);
+        }
+    }
+
+    // Strategy 3: Fallback to host memory if needed
+    if allocated_blocks.is_empty() {
+        if let Some(host_pool) = block_manager.host() {
+            match host_pool.allocate_blocks_blocking(requested_blocks) {
+                Ok(blocks) =&gt; {
+                    println!("Allocated {} blocks from host memory", blocks.len());
+                    allocated_blocks = blocks;
+                }
+                Err(e) =&gt; {
+                    println!("Host allocation failed: {}", e);
+                }
+            }
+        }
+    }
+
+    // Strategy 4: Fallback to disk storage if needed
+    if allocated_blocks.is_empty() {
+        if let Some(disk_pool) = block_manager.disk() {
+            match disk_pool.allocate_blocks_blocking(requested_blocks) {
+                Ok(blocks) =&gt; {
+                    println!("Allocated {} blocks from disk storage", blocks.len());
+                    allocated_blocks = blocks;
+                }
+                Err(e) =&gt; {
+                    println!("Disk allocation failed: {}", e);
+                }
+            }
+        }
+    }
+
+    if allocated_blocks.is_empty() {
+        return Err("Failed to allocate blocks from any storage tier".into());
+    }
+
+    println!("Successfully allocated {} blocks", allocated_blocks.len());
+    
+    // Process blocks...
+    for block in allocated_blocks {
+        // Process block
+    }
+
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="python-examples"><a class="header" href="#python-examples">Python Examples</a></h2>
+<h3 id="example-1-basic-python-usage"><a class="header" href="#example-1-basic-python-usage">Example 1: Basic Python Usage</a></h3>
+<pre><code class="language-python">import dynamo_llm
+import torch
+
+def basic_block_manager_example():
+    # Create block manager
+    block_manager = dynamo_llm.BlockManager(
+        num_layers=32,
+        page_size=16,
+        inner_dim=4096,
+        dtype=dynamo_llm.DType.FP16
+    )
+    
+    print(f"Block manager created with block size: {block_manager.block_size}")
+    
+    # Allocate blocks
+    blocks = block_manager.allocate_blocks(4)
+    print(f"Allocated {len(blocks)} blocks")
+    
+    # Process blocks
+    for i, block in enumerate(blocks):
+        print(f"Block {i} has {len(block)} layers")
+        
+        # Access layer data
+        for layer_idx in range(len(block)):
+            layer = block[layer_idx]
+            
+            # Convert to PyTorch tensor
+            tensor = torch.from_dlpack(layer.__dlpack__())
+            print(f"  Layer {layer_idx} shape: {tensor.shape}")
+            
+            # Perform operations
+            mean = tensor.mean().item()
+            std = tensor.std().item()
+            print(f"  Layer {layer_idx} stats: mean={mean:.4f}, std={std:.4f}")
+
+if __name__ == "__main__":
+    basic_block_manager_example()
+</code></pre>
+<h3 id="example-2-block-pool-management"><a class="header" href="#example-2-block-pool-management">Example 2: Block Pool Management</a></h3>
+<pre><code class="language-python">import dynamo_llm
+
+def block_pool_example():
+    # Create block manager
+    block_manager = dynamo_llm.BlockManager(
+        num_layers=32,
+        page_size=16,
+        inner_dim=4096
+    )
+    
+    # Access different pools
+    device_pool = block_manager.get_device_pool()
+    host_pool = block_manager.get_host_pool()
+    
+    if device_pool:
+        print(f"Device pool: {device_pool.total_blocks()} total, "
+              f"{device_pool.available_blocks()} available")
+        
+        # Allocate from device pool
+        device_blocks = device_pool.allocate_blocks(2)
+        print(f"Allocated {len(device_blocks)} blocks from device")
+        
+        # Check memory usage
+        usage = device_pool.usage()
+        print(f"Device memory usage: {usage:.2%}")
+    
+    if host_pool:
+        print(f"Host pool: {host_pool.total_blocks()} total, "
+              f"{host_pool.available_blocks()} available")
+        
+        # Allocate from host pool
+        host_blocks = host_pool.allocate_blocks(1)
+        print(f"Allocated {len(host_blocks)} blocks from host")
+
+if __name__ == "__main__":
+    block_pool_example()
+</code></pre>
+<h3 id="example-3-memory-monitoring"><a class="header" href="#example-3-memory-monitoring">Example 3: Memory Monitoring</a></h3>
+<pre><code class="language-python">import dynamo_llm
+import time
+
+def monitor_memory_usage():
+    # Create block manager
+    block_manager = dynamo_llm.BlockManager(
+        num_layers=32,
+        page_size=16,
+        inner_dim=4096
+    )
+    
+    device_pool = block_manager.get_device_pool()
+    if not device_pool:
+        print("Device pool not available")
+        return
+    
+    print("Monitoring memory usage...")
+    print("Time | Total | Available | Used | Usage %")
+    print("-" * 50)
+    
+    for i in range(10):
+        total = device_pool.total_blocks()
+        available = device_pool.available_blocks()
+        used = total - available
+        usage = used / total * 100
+        
+        print(f"{i:4d} | {total:5d} | {available:9d} | {used:4d} | {usage:6.1f}%")
+        
+        # Allocate some blocks to see usage change
+        if i % 3 == 0:
+            try:
+                blocks = device_pool.allocate_blocks(10)
+                print(f"     Allocated {len(blocks)} blocks")
+            except Exception as e:
+                print(f"     Allocation failed: {e}")
+        
+        time.sleep(1)
+
+if __name__ == "__main__":
+    monitor_memory_usage()
+</code></pre>
+<h3 id="example-4-error-handling"><a class="header" href="#example-4-error-handling">Example 4: Error Handling</a></h3>
+<pre><code class="language-python">import dynamo_llm
+
+def error_handling_example():
+    try:
+        # Create block manager
+        block_manager = dynamo_llm.BlockManager(
+            num_layers=32,
+            page_size=16,
+            inner_dim=4096
+        )
+        
+        # Try to allocate more blocks than available
+        device_pool = block_manager.get_device_pool()
+        if device_pool:
+            total_blocks = device_pool.total_blocks()
+            
+            try:
+                # Try to allocate more than available
+                blocks = device_pool.allocate_blocks(total_blocks + 10)
+                print(f"Allocated {len(blocks)} blocks")
+            except dynamo_llm.BlockManagerError as e:
+                print(f"Block manager error: {e}")
+            except Exception as e:
+                print(f"Unexpected error: {e}")
+        
+    except Exception as e:
+        print(f"Failed to create block manager: {e}")
+
+if __name__ == "__main__":
+    error_handling_example()
+</code></pre>
+<h2 id="performance-examples"><a class="header" href="#performance-examples">Performance Examples</a></h2>
+<h3 id="example-1-batch-processing"><a class="header" href="#example-1-batch-processing">Example 1: Batch Processing</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use dynamo_llm::block_manager::{KvBlockManager, BasicMetadata};
+use std::sync::Arc;
+use tokio::spawn;
+
+async fn batch_processing_example(block_manager: Arc&lt;KvBlockManager&lt;BasicMetadata&gt;&gt;) -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let batch_size = 10;
+    let num_batches = 5;
+    
+    let mut handles = Vec::new();
+    
+    // Spawn multiple batch processing tasks
+    for batch_id in 0..num_batches {
+        let bm = block_manager.clone();
+        let handle = spawn(async move {
+            let device_pool = bm.device().unwrap();
+            let blocks = device_pool.allocate_blocks_blocking(batch_size).unwrap();
+            
+            println!("Batch {}: Processing {} blocks", batch_id, blocks.len());
+            
+            // Process blocks
+            for block in blocks {
+                // Simulate processing
+                for layer_idx in 0..block.num_layers() {
+                    let _layer_view = block.layer_view(layer_idx, 0).unwrap();
+                    // Process layer data
+                }
+            }
+            
+            println!("Batch {}: Completed", batch_id);
+        });
+        
+        handles.push(handle);
+    }
+    
+    // Wait for all batches to complete
+    for handle in handles {
+        handle.await.unwrap();
+    }
+    
+    println!("All batches completed!");
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="example-2-memory-efficient-processing"><a class="header" href="#example-2-memory-efficient-processing">Example 2: Memory-Efficient Processing</a></h3>
+<pre><code class="language-python">import dynamo_llm
+import gc
+
+def memory_efficient_processing():
+    block_manager = dynamo_llm.BlockManager(
+        num_layers=32,
+        page_size=16,
+        inner_dim=4096
+    )
+    
+    device_pool = block_manager.get_device_pool()
+    if not device_pool:
+        return
+    
+    print("Memory-efficient processing...")
+    
+    for i in range(100):
+        # Allocate blocks
+        blocks = device_pool.allocate_blocks(5)
+        
+        # Process blocks
+        for block in blocks:
+            for layer in block:
+                # Process layer data
+                tensor = torch.from_dlpack(layer.__dlpack__())
+                result = torch.softmax(tensor, dim=-1)
+                # Use result...
+        
+        # Explicitly delete blocks to return to pool
+        del blocks
+        
+        # Force garbage collection
+        gc.collect()
+        
+        # Monitor memory usage
+        if i % 10 == 0:
+            usage = device_pool.usage()
+            print(f"Iteration {i}: Memory usage {usage:.2%}")
+
+if __name__ == "__main__":
+    memory_efficient_processing()
+</code></pre>
+<h2 id="next-steps-9"><a class="header" href="#next-steps-9">Next Steps</a></h2>
+<ul>
+<li><a href="examples/advanced_usage.html">Advanced Usage</a> - More complex examples and patterns</li>
+<li><a href="examples/vllm_integration.html">vLLM Integration</a> - Production deployment examples</li>
+<li><a href="examples/advanced/performance.html">Performance Optimization</a> - Performance tuning guides</li>
+<li><a href="examples/api/rust.html">API Reference</a> - Complete API documentation</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="advanced-usage-2"><a class="header" href="#advanced-usage-2">Advanced Usage</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vllm-integration-2"><a class="header" href="#vllm-integration-2">vLLM Integration</a></h1>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+    </div>
+    </body>
+</html>
